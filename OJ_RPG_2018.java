@@ -25,7 +25,7 @@ public class OJ_RPG_2018 extends JFrame
     int xpos, ypos;
     boolean status, setGender; //true for female, false for male;
     String setName;
-    private int [] inventory = new int [3]; //stores 
+    private boolean [] inventory = new boolean [3]; //stores 
     int direction;
     
     public Player (int x, int y, int id, boolean gender, String name) { //constructor
@@ -46,11 +46,11 @@ public class OJ_RPG_2018 extends JFrame
     public int getY() { //retrieve the players x position
       return ypos; 
     }
-    public int changeX(int num) { //change the players x position
-      return xpos+num; 
+    public void changeX(int num) { //change the players x position
+       xpos+=num; 
     }
-    public int changeY(int num) { //change the players y position
-      return ypos+num; 
+    public void changeY(int num) { //change the players y position
+      ypos+=num; 
     }
     
     public boolean getStatus() { //to see if the player is alive
@@ -60,21 +60,11 @@ public class OJ_RPG_2018 extends JFrame
     public boolean getGender() { //if it is true then female, false=male
       return setGender;
     }
-    public int getKey(){ //retrieve key from inventory array
-      int key= inventory[0];
-      return key;
-    }
-     public int getSword(){ //retrieve key from inventory array
-      int sword= inventory[1];
-      return sword;
-    }      
-     public int getMemory(){ //retrieve key from inventory array
-      int memory= inventory[2];
-      return memory;
+    public void getItem(int num){ //change item entered (based on the number ID) to true so the player has picked up the object
+      inventory [num] = true;
     }
      public int getDirection(int num){ //draw class will have 4 numbers each assigned an arrow key
        return num;  
-     //getDirectionx(); 
      }
   }
       
