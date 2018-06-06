@@ -61,23 +61,47 @@ public class OJ_RPG_2018 extends JFrame
       return setGender;
     }
     public int getKey(){ //retrieve key from inventory array
-      int key= inventory[1];
+      int key= inventory[0];
       return key;
     }
      public int getSword(){ //retrieve key from inventory array
-      int sword= inventory[0];
+      int sword= inventory[1];
       return sword;
     }      
      public int getMemory(){ //retrieve key from inventory array
       int memory= inventory[2];
       return memory;
     }
-     public int getDirection(int num) //draw class will have 4 numbers each assigned an arrow key
-       return ;  
-//getDirectionx();
+     public int getDirection(int num){ //draw class will have 4 numbers each assigned an arrow key
+       return num;  
+     //getDirectionx(); 
+     }
   }
       
- 
+  class Item {
+    boolean object;
+    int ID, xpos,ypos;
+    //changing x and y coordinates for the memory objets which will follow the monster
+    
+    public Item (int identity, int x, int y) { //constructor
+      ID = identity; //the id is like 1 for sword, 0 for key and 2 for memory objects
+      object = true; //change boolean for object being on the screen to true
+      xpos= x; 
+      ypos=y;
+      
+    }
+    public int getx (){ //x position of the object
+      return xpos;
+    }
+    
+    public int gety () {//y position of the object
+      return ypos;    
+    }
+    
+    public void pickUp() { //if the object is picked by the player such as if they walk over it then the boolean for the object being on the screen is changed to false
+      object= false;
+    }
+ }
 //=================================<Panel constructor>============================== 
   public OJ_RPG_2018 () 
   {// start of panel setup
