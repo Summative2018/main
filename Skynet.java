@@ -8,7 +8,7 @@ import java.util.*;
 
 
 
-public class OJ_RPG_2018 extends JFrame  
+public class Skynet extends JFrame  
 {// start
   Timer t = new Timer(80,null);// updates graphics and game
   Map floor = new Map(0);
@@ -139,7 +139,7 @@ public class OJ_RPG_2018 extends JFrame
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public void EnemyAI (Player hero, Map floor) //hero has id = 1, enemy has id = 2
     { //25 by 25 map tile is  32by32
-      if (this.status)
+      if (this.status) // if monster is alive
       {
         int dx = hero.getX()/32 - this.getX()/32; //distance between player and enemy in x direction
         //System.out.println ("dx = " + dx);
@@ -147,92 +147,51 @@ public class OJ_RPG_2018 extends JFrame
         //System.out.println ("dy = " + dy);
         double ds = Math.sqrt( (dx*dx+0.0) + (dy*dy+0.0) ); //find distance between player position and enemy position
         //System.out.println ("ds = " + ds);
-
-        boolean moveX = true;
-        boolean moveY = true;
+        boolean moveX = true; //if monster can see "player" (x direction)
+        boolean moveY = true; //if monster can see "player" (y direction)
+        int vel = 8; //velocity of monster
         
-        for (int x = (Math.min(hero.getX()/32,this.getX()/32)) ; x < (Math.max(hero.getX()/32,this.getX()/32)) ; x++)
+        for (int x = (Math.min(hero.getX()/32,this.getX()/32)) ; x < (Math.max(hero.getX()/32,this.getX()/32)) ; x++) // check tiles between monster and player (x direction)
         {
-          if (floor.getFloorID( x,this.getY()/32) == 'w')
+          if (floor.getFloorID( x,this.getY()/32) == 'w') //if there's a wall
           {
-            moveX = false;
+            moveX = false; //monster cant see player (monster stops moving)
+            
           }
         }
-        for (int y = (Math.min(hero.getY()/32,this.getY()/32)) ; y < (Math.max(hero.getY()/32,this.getY()/32)) ; y++)
+        for (int y = (Math.min(hero.getY()/32,this.getY()/32)) ; y < (Math.max(hero.getY()/32,this.getY()/32)) ; y++) // check tiles between monster and player (y direction)
         {
-          if (floor.getFloorID( this.getX()/32,y) == 'w')
+          if (floor.getFloorID( this.getX()/32,y) == 'w') //if there's a wall
           {
-            moveY = false;
+            moveY = false; //monster cant see player (monster stops moving) 
           }
         }
         
-        
-        
-        if(moveX)
+        if(moveX && moveY) //if monster can see you
         {
           if (true)//test
           {
             //when dx is larger than dy
             if ( Math.abs(dx) >= Math.abs(dy)) //if x direction is farther than y - move in x direction
-            {
-              if (floor.getFloorID( this.getX()/32+(Integer.signum(dx)),this.getY()/32) == 'f' && floor.getFloorID(this.getX()/32,this.getY()/32+(Integer.signum(dy))) == 'f' )//if spot to the right/left and up/down is empty
-              {this.changeX(Integer.signum(dx)*5); //move diagonaly 1 tile
-              this.changeY(Integer.signum(dy)*5);}
+            { 
+              if (floor.getFloorID( this.getX()/32+(Integer.signum(dx)),this.getY()/32) == 'f')//if spot to the right/left is empty
+              {this.changeX(Integer.signum(dx)*vel);}//move 1 tile in that direction
               
-              else if (floor.getFloorID( this.getX()/32+(Integer.signum(dx)),this.getY()/32) == 'f')//if spot to the right/left is empty
-              {this.changeX(Integer.signum(dx)*5);}//move 1 tile in that direction
+              if (floor.getFloorID(this.getX()/32,this.getY()/32+(Integer.signum(dy))) == 'f')//if spot above/below is empty
+              {this.changeY(Integer.signum(dy)*vel);}//move 1 tile in that direction
               
-              else if (floor.getFloorID(this.getX()/32,this.getY()/32+(Integer.signum(dy))) == 'f')//if spot above/below is empty
-              {this.changeY(Integer.signum(dy)*5);}//move 1 tile in that direction
             }
             //when dy is larger than dx
             if ( Math.abs(dy) > Math.abs(dx)) //if y direction is farther than x - move in y direction
             {
-              if (floor.getFloorID( this.getX()/32+(Integer.signum(dx)),this.getY()/32) == 'f' && floor.getFloorID(this.getX()/32,this.getY()/32+(Integer.signum(dy))) == 'f' )//if spot to the right/left and up/down is empty
-              {this.changeX(Integer.signum(dx)*5); //move diagonaly 1 tile
-              this.changeY(Integer.signum(dy)*5);}
+              if (floor.getFloorID(this.getX()/32,this.getY()/32+(Integer.signum(dy))) == 'f')//if spot above/below is empty
+              {this.changeY(Integer.signum(dy)*vel);}//move 1 tile in that direction
               
-              else if (floor.getFloorID(this.getX()/32,this.getY()/32+(Integer.signum(dy))) == 'f')//if spot above/below is empty
-              {this.changeY(Integer.signum(dy)*5);}//move 1 tile in that direction
+              if (floor.getFloorID(this.getX()/32+(Integer.signum(dx)),this.getY()/32) == 'f')//if spot to the right/left is empty
+              {this.changeX(Integer.signum(dx)*vel);}//move 1 tile in that direction
               
-              else if (floor.getFloorID(this.getX()/32+(Integer.signum(dx)),this.getY()/32) == 'f')//if spot to the right/left is empty
-              {this.changeX(Integer.signum(dx)*5);}//move 1 tile in that direction
             }
           }
-          
-          if(moveY)
-          {
-            if (true)//test
-            {
-              //when dx is larger than dy
-              if ( Math.abs(dx) >= Math.abs(dy)) //if x direction is farther than y - move in x direction
-              {
-                if (floor.getFloorID( this.getX()/32+(Integer.signum(dx)),this.getY()/32) == 'f' && floor.getFloorID(this.getX()/32,this.getY()/32+(Integer.signum(dy))) == 'f' )//if spot to the right/left and up/down is empty
-                {this.changeX(Integer.signum(dx)*5); //move diagonaly 1 tile
-                  this.changeY(Integer.signum(dy)*5);} 
-                
-                else if (floor.getFloorID( this.getX()/32+(Integer.signum(dx)),this.getY()/32) == 'f')//if spot to the right/left is empty
-                {this.changeX(Integer.signum(dx)*5);}//move 1 tile in that direction
-                
-                else if (floor.getFloorID(this.getX()/32,this.getY()/32+(Integer.signum(dy))) == 'f')//if spot above/below is empty
-                {this.changeY(Integer.signum(dy)*5);}//move 1 tile in that direction
-              }
-              //when dy is larger than dx
-              if ( Math.abs(dy) > Math.abs(dx)) //if y direction is farther than x - move in y direction
-              {
-                if (floor.getFloorID( this.getX()/32+(Integer.signum(dx)),this.getY()/32) == 'f' && floor.getFloorID(this.getX()/32,this.getY()/32+(Integer.signum(dy))) == 'f' )//if spot to the right/left and up/down is empty
-                {this.changeX(Integer.signum(dx)*5); //move diagonaly 1 tile
-                  this.changeY(Integer.signum(dy)*5);}
-                
-                else if (floor.getFloorID(this.getX()/32,this.getY()/32+(Integer.signum(dy))) == 'f')//if spot above/below is empty
-                {this.changeY(Integer.signum(dy)*5);}//move 1 tile in that direction
-                
-                else if (floor.getFloorID(this.getX()/32+(Integer.signum(dx)),this.getY()/32) == 'f')//if spot to the right/left is empty
-                {this.changeX(Integer.signum(dx)*5);}//move 1 tile in that direction
-              }
-            }
-          }
-          
         }
       }
       
@@ -240,7 +199,7 @@ public class OJ_RPG_2018 extends JFrame
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   }
 //=================================<Panel constructor>============================== 
-  public OJ_RPG_2018 () throws IOException
+  public Skynet () throws IOException
   {// start of panel setup
     // Creating JPanel for the background and JPanel for interations (options)
     setLayout (new BorderLayout ());// Use BorderLayout for main panel
@@ -420,7 +379,7 @@ public class OJ_RPG_2018 extends JFrame
 //==================================================================================    
   public static void main(String[] args) throws IOException
   {///start of main
-    OJ_RPG_2018 game = new  OJ_RPG_2018 ();
+    Skynet game = new  Skynet ();
     game.setVisible (true);
   }//end of main
 }///end of class
