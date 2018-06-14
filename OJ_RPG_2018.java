@@ -62,7 +62,6 @@ public class OJ_RPG_2018 extends JFrame implements ActionListener
       try {
         character ch = new character();
         setVisible(false);
-        //skynet game = new skynet();   
       }
       catch (Exception ex) {
       }
@@ -102,7 +101,7 @@ public class OJ_RPG_2018 extends JFrame implements ActionListener
       g.drawString("1. START GAME", 377, 230); //display options
       g.drawString ("2. VIEW INSTRUCTIONS", 339, 280);
       g.drawString ("3. QUIT", 412, 330); 
-      g.drawString ("Press the corresponding button", 327, 470); 
+      g.drawString ("Press the correlated button", 327, 470); 
     }
     
   }//end of drawarea
@@ -145,7 +144,7 @@ class Instructions extends JFrame
       g.setFont(new Font("Times New Roman", Font.ITALIC, 20)); //set font and colour
       g.drawString("Welcome to the RPG made by Jonathan, Gajan and Sonia", 192, 70);   
       g.setFont(new Font("Times New Roman", Font.BOLD, 15)); //set font and colour
-      g.drawString("In this game you get to pick the characteristics your player (name and gender).", 168, 130);   
+      g.drawString("In this game you get to customize parts of your player (name and gender).", 174, 130);   
       g.drawString("The story involves your player starting on top of a tower and suffering from complete memory", 114, 190);   
       g.drawString("loss. The tower has 3 floors that contain new challenges and enemies the player must defeat.", 127, 250);   
       g.drawString("On each floor there is an enemy who has an object that has the power to restore part of the players memory.", 67, 310);    
@@ -162,7 +161,7 @@ class character extends JFrame implements ActionListener
 {
   DrawArea board;
   JButton choice[] = new JButton[3]; //for quit button
-  boolean gender;
+  public boolean gender;
   String nameOfPlayer;
   private JTextField _addNameTF = new JTextField (15);
   private JPanel addNamePanel   = new JPanel();
@@ -187,7 +186,7 @@ class character extends JFrame implements ActionListener
     choice[2] = new JButton("Proceed"); // create quit button
     board.add(choice[2], "North"); // add to board
     choice[2].addActionListener(this); // link to listener
-   
+    
     JButton addNameBtn = new JButton ("Add Name");
     addNameBtn.addActionListener (this); // Connect button to listener class
     addNameBtn.setActionCommand( "add" );
@@ -215,34 +214,35 @@ class character extends JFrame implements ActionListener
   public void actionPerformed (ActionEvent e)
   {   
     String newName = _addNameTF.getText (); // Retrieve values from text fields
-    
     if (e.getActionCommand().equals("Proceed")) { //if the user presses the first button
       try {
-        skynet game = new skynet();  
+        skynet game = new skynet(gender, nameOfPlayer);  
         setVisible(false); //closes the character making window and will only keep the game open now
       }
       catch (Exception ex) {
       }
     }
     if (e.getActionCommand().equals("Male")) { //if the user presses the first button
-      boolean gender= true;
+      gender= false;
+      System.out.println (gender);
     }
     if (e.getActionCommand().equals("Female")) { //if the user presses the first button
-      boolean gender= false;
+      gender= true;
+      System.out.println (gender);
     }
     if (e.getActionCommand().equals( "add" ) && !newName.equals (""))
     {
       nameOfPlayer = newName;
     }
   }
- //==================================<getter methods>==============================
-  public boolean returnGender() {
-   return gender; 
-  }
-  public String returnName () {
-   return nameOfPlayer; 
-  }
-  
+
+//  public boolean returnGender() {
+//    return gender; 
+//  }
+//  public String returnName () {
+//    return nameOfPlayer; 
+//  }
+//  
 //==================================<method for drawarea>=============================================================
   class DrawArea extends JPanel
   {
@@ -263,11 +263,6 @@ class character extends JFrame implements ActionListener
       
     }
   }
-  public static void main(String[] args) throws IOException
-  {///start of main
-    character game2 = new  character ();
-    game2.setVisible (true);
-  }//end of main
   
 }
 
@@ -278,20 +273,24 @@ class skynet extends JFrame //implements ActionListener
   Timer t = new Timer(80,null);// updates graphics and game
   Map floor = new Map(0);
   boolean walk = false;
-  Player player = new Player (2*32,21*32,0,true,"Raw Vodka",1);
-  Player enemy = new Player (15*32,9*32,0,true,"Monster",1);
+ 
+  Player player;// = new Player (2*32,21*32,0,gender,"Raw Vodka",1); //player object is created and gender variable is used
+  Player enemy=new Player (15*32,9*32,0,true,"Monster",1);
   double disx, disy;
   int num = 0;
   // JButton choice[] = new JButton[1]; //for quit button
   
   //=================================<Panel constructor>==========================
-  public skynet () throws IOException
+  public skynet (boolean gender, String name) throws IOException
   {// start of panel setup
+   // System.out.println (name);
+    player = new Player (2*32,21*32,0,gender,name,1); //player object is created and gender variable is used
+    //player = new Player (2*32,21*32,0,gender,"Raw Vodka",1); //player object is created and gender variable is used
+    
     // Creating JPanel for the background and JPanel for interations (options)
     setLayout (new BorderLayout ());// Use BorderLayout for main panel
     JPanel background = new JPanel (); // Create a content panel to hold the backgournd images
     background.setLayout(new BorderLayout ());// sets layout to null so that set bounds can be used 
-    // timer setup   
     
     // Colouring panels  
     background.setBackground(Color.BLACK);
@@ -310,7 +309,7 @@ class skynet extends JFrame //implements ActionListener
     background.setFocusable(true);
     pack();
     // Game window Setup  
-    setTitle("Hangman Plus");  //CHANGE LATER
+    setTitle("Official RPG");  //CHANGE LATER
     background.setPreferredSize (new Dimension (1000,800));
     setSize(1080,825); //Sets the JFrame size
     setVisible(true); //Reveals JFrame
@@ -438,6 +437,9 @@ class skynet extends JFrame //implements ActionListener
     public boolean getGender() { //if it is true then female, false=male
       return setGender;
     }
+    public String getName() { //if it is true then female, false=male
+      return setName;
+    }
     public void getItem(int num){ //change item entered (based on the number ID) to true so the player has picked up the object
       inventory [num] = true;
     }  
@@ -560,18 +562,14 @@ class skynet extends JFrame //implements ActionListener
     {//start of paintComponent
       Image[][][] tony = loadPlayer();
       int x,y,z;
-      if (player.getGender() == true)
+      if (player.getGender() == true) //calling getGender return method to see if gender is true or false 
       {z=0;}
       else {z=1;}
       
       y = player.getDirection();
       //System.out.println("<"+y+">");
       g.drawImage(floor.getMap(),0,0,null);
-//           for (int a = 0; a < 25; a++) 
-//     {for (int b = 0; b < 25; b++)
-//     {if (floor.getFloorID(b,a) =='f')
-//       {g.setColor(Color.white);
-//       g.fillRect(0+(32*b),0+(32*a),32,32);}}}
+      
       
       if (!walk)
       {g.drawImage(tony[z][y][0], player.getX(), player.getY()-16,null);}
@@ -615,6 +613,7 @@ class skynet extends JFrame //implements ActionListener
       enemy.EnemyAI(player,floor);
       player.changeY(player.getVelY());
       player.changeX(player.getVelX());//}
+      
       //else{}
     }//end of void
     
@@ -673,10 +672,5 @@ class skynet extends JFrame //implements ActionListener
       {player.setVelX(0);}  
       walk = false;}   
   }
-//=========================================================================    
-  public static void main(String[] args) throws IOException
-  {///start of main
-    skynet game = new  skynet ();
-    game.setVisible (true);
-  }//end of main
+
 }///end of class
