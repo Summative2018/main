@@ -5,326 +5,18 @@ import javax.swing.Timer; // Allow use of timer
 import javax.imageio.*;
 import java.io.*;
 import java.util.*;
-import java.util.Scanner;
 
-public class OJ_RPG_2018 extends JFrame implements ActionListener
-{// start
-  static Scanner sc;
-  JButton choice[] = new JButton[3];
-  
-//=================================<Menu Panel constructor>======================= 
-  public OJ_RPG_2018 () 
-  {// start of panel setup
-    // Creating JPanel for the background and JPanel for interations (options)
-    setLayout (new BorderLayout ());// Use BorderLayout for main panel
-    JPanel background = new JPanel (); // Create a content panel to hold the backgournd images
-    background.setLayout(new GridLayout ());// sets layout to null so that set bounds can be used 
-    // timer setup   
-    
-    // Colouring panels  
-    //background.setBackground(Color.BLACK);
-    //timer setup   
-    
-    // Creating Drawing Area and Panel Setup
-    DrawArea playfield = new DrawArea (900, 600);
-    
-    choice[0] = new JButton("Play Game"); // create letter button
-    playfield.add(choice[0]); // add to board
-    choice[0].addActionListener(this); // link to listener (same for the next 3 buttons)
-    
-    choice[1] = new JButton("View Instructions"); 
-    playfield.add(choice[1]); 
-    choice[1].addActionListener(this); 
-    
-    choice[2] = new JButton("Quit"); 
-    playfield.add(choice[2]); 
-    choice[2].addActionListener(this);
-    
-    background.add(playfield); // Output area
-    add("Center",background);
-    
-    setContentPane(background);
-    background.setFocusable(true);
-    pack();
-    // Game window Setup  
-    setTitle("Menu");
-    background.setPreferredSize (new Dimension (900,600));
-    setSize(900,700); //Sets the JFrame size
-    setVisible(true); //Reveals JFrame
-    setResizable(false); 
-    setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-    setLocationRelativeTo(null);//centers window on launch  
-  }
-//==================================================================================== 
-  public void actionPerformed (ActionEvent e)
-  {   
-    if (e.getActionCommand().equals("Play Game")) { //if the user presses the first button
-      try {
-        character ch = new character();
-        setVisible(false);
-      }
-      catch (Exception ex) {
-      }
-    }
-    else if (e.getActionCommand().equals("View Instructions")) { //if the user presses the second button
-      choice[1].setEnabled(true); //the second choice has now been played and cannot be played again, disable the button
-      Instructions window = new Instructions (); //create a hangman game class object according to the second choice
-      window.setVisible (true);      
-    }
-    
-    else if (e.getActionCommand().equals("Quit")) { //if the user presses the third button
-      choice[2].setEnabled(true); //the third choice has now been played and cannot be played again, disable button
-      System.exit(0);
-    }
-    
-  }
-  //=========================================<drawarea method>========================================================= 
-  
-  class DrawArea extends JPanel
-  {//start of drawarea
-    // load images for use
-    
-    public DrawArea (int width, int height)// Create panel of given size
-    {//start of drawarea
-      this.setBounds( 0, 0, width, height);//(new Dimension (width, height));
-    }//end of drawarea
-    
-    public void paintComponent (Graphics g)  // g can be passed to a class method
-    {//start of paintComponent
-      //setBackground(Color.lightGray); //set colour of the background of window
-      g.setFont(new Font("American Typewriter", Font.ITALIC, 24)); //set font and colour
-      g.setColor(Color.red);
-      g.drawString ("RPG", 426, 160); //prompt user to choose a word to guess
-      
-      g.setFont(new Font("Times New Roman", Font.BOLD, 20));
-      g.setColor(Color.blue);
-      g.drawString("1. START GAME", 377, 230); //display options
-      g.drawString ("2. VIEW INSTRUCTIONS", 339, 280);
-      g.drawString ("3. QUIT", 412, 330); 
-      g.drawString ("Press the correlated button", 327, 470); 
-    }
-    
-  }//end of drawarea
-  
-  public static void main(String[] args) 
-  {///start of main 
-    sc = new Scanner (System.in); 
-    OJ_RPG_2018 game = new  OJ_RPG_2018 ();
-    game.setVisible (true);   
-  }//end of main
-  
-}///end of class
 
-//==================================New class for instructions panel=====================================================
-class Instructions extends JFrame
-{
-  DrawArea board;
-  
-  public Instructions() //constructor
-  {
-    board = new DrawArea (100, 100);
-    add(board); //Add to JFrame   
-    setTitle ("Instructions Panel"); //set title and size of window
-    setSize (860, 650);
-    //setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
-    setLocationRelativeTo (null); //center window
-    setResizable(false);  //disable users ability to resize window
-  }
-  
-  class DrawArea extends JPanel
-  {
-    public DrawArea (int width, int height)  // Create panel of given size
-    {
-      this.setPreferredSize (new Dimension (width, height));
-    }
-    
-    public void paintComponent (Graphics g)
-    {
-      g.setColor (new Color (120, 0, 0)); //create the hangman stand
-      g.setFont(new Font("Times New Roman", Font.ITALIC, 20)); //set font and colour
-      g.drawString("Welcome to the RPG made by Jonathan, Gajan and Sonia", 192, 70);   
-      g.setFont(new Font("Times New Roman", Font.BOLD, 15)); //set font and colour
-      g.drawString("In this game you get to customize parts of your player (name and gender).", 174, 130);   
-      g.drawString("The story involves your player starting on top of a tower and suffering from complete memory", 114, 190);   
-      g.drawString("loss. The tower has 3 floors that contain new challenges and enemies the player must defeat.", 127, 250);   
-      g.drawString("On each floor there is an enemy who has an object that has the power to restore part of the players memory.", 67, 310);    
-      g.drawString("In order to defeat the enemies utilize the swords and keys on the floors of the levels.", 126, 370);  
-      g.drawString("The arrow keys will help you move around the level.", 260, 430);     
-      g.drawString("To pick up objects you have to stand on top of them and they will be added to your inventory.", 133, 490); 
-      g.drawString("To exit a room you must have a key in your inventory and stand in front of it for it to open.", 133, 550); 
-      g.drawString("To use the sword press --. Good Luck!", 310, 590); 
-    }   
-  }
-}
-//==================================New class for character panel=======================================================
-class character extends JFrame implements ActionListener
-{
-  DrawArea board;
-  JButton choice[] = new JButton[3]; //for quit button
-  public boolean gender;
-  String nameOfPlayer;
-  private JTextField _addNameTF = new JTextField (15);
-  private JPanel addNamePanel   = new JPanel();
-  
-  public character() throws IOException//constructor
-  {
-    setLayout (new FlowLayout ());// Use BorderLayout for main panel
-    JPanel background = new JPanel (); // Create a content panel to hold the backgournd images
-    background.setLayout(new FlowLayout ());// sets layout to null so that set bounds can be used 
-    
-    // Creating Drawing Area and Panel Setup
-    board = new DrawArea (1000, 1000);
-    
-    choice[0] = new JButton("Female"); // create female button
-    board.add(choice[0], "North"); // add to board
-    choice[0].addActionListener(this); // link to listener
-    
-    choice[1] = new JButton("Male"); // create male button
-    board.add(choice[1], "Female"); // add to board
-    choice[1].addActionListener(this); // link to listener
-    
-    choice[2] = new JButton("Proceed"); // create quit button
-    board.add(choice[2], "North"); // add to board
-    choice[2].addActionListener(this); // link to listener
-    
-    JButton addNameBtn = new JButton ("Add Name");
-    addNameBtn.addActionListener (this); // Connect button to listener class
-    addNameBtn.setActionCommand( "add" );
-    
-    background.add(addNamePanel);
-    
-    addNamePanel.add (new JLabel ("Enter your characters name:")); // Create, add label
-    addNamePanel.add (_addNameTF);            // Add input field
-    addNamePanel.add (addNameBtn);  
-    
-    background.add(board); // Output area
-    add("Center",background);
-    setContentPane(background);
-    background.setFocusable(true);
-    pack();
-    setTitle("Character Panel"); 
-    background.setPreferredSize (new Dimension (900,800));
-    setSize(900,700); //Sets the JFrame size
-    setVisible(true); //Reveals JFrame
-    setResizable(false); 
-    setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
-    setLocationRelativeTo(null);//centers window on launch  
-  }
-  //==================================<method for proceed button>==============================
-  public void actionPerformed (ActionEvent e)
-  {   
-    String newName = _addNameTF.getText (); // Retrieve values from text fields
-    if (e.getActionCommand().equals("Proceed")) { //if the user presses the first button
-      try {
-        skynet game = new skynet(gender, nameOfPlayer);  
-        setVisible(false); //closes the character making window and will only keep the game open now
-      }
-      catch (Exception ex) {
-      }
-    }
-    if (e.getActionCommand().equals("Male")) { //if the user presses the first button
-      gender= false;
-      System.out.println (gender);
-    }
-    if (e.getActionCommand().equals("Female")) { //if the user presses the first button
-      gender= true;
-      System.out.println (gender);
-    }
-    if (e.getActionCommand().equals( "add" ) && !newName.equals (""))
-    {
-      nameOfPlayer = newName;
-    }
-  }
 
-//  public boolean returnGender() {
-//    return gender; 
-//  }
-//  public String returnName () {
-//    return nameOfPlayer; 
-//  }
-//  
-//==================================<method for drawarea>=============================================================
-  class DrawArea extends JPanel
-  {
-    public DrawArea (int width, int height)  // Create panel of given size
-    {
-      this.setPreferredSize (new Dimension (width, height));
-    }
-    
-    public void paintComponent (Graphics g)
-    {
-      g.setColor (new Color (120, 0, 0)); //create the hangman stand
-      g.setFont(new Font("Times New Roman", Font.ITALIC, 20)); //set font and colour
-      g.drawString("Create your character by picking your: ", 345, 100);   
-      g.setFont(new Font("Times New Roman", Font.BOLD, 20)); //set font and colour
-      g.drawString("Gender (press it)", 435, 130);   
-      g.drawString("Name (Enter it above and press add name)", 330, 190);   
-      g.drawString("Press the corresponding buttons and then press proceed", 270, 250);   
-      
-    }
-  }
-  
-}
-
-//==================================New class for actual rpgpanel=======================================================
-
-class skynet extends JFrame //implements ActionListener
+public class OJ_RPG_2018 extends JFrame  
 {// start
   Timer t = new Timer(80,null);// updates graphics and game
-  Map floor = new Map(0);
+  int num = 0, lvl = 0;
+  Map floor = new Map(lvl);
   boolean walk = false;
- 
-  Player player;// = new Player (2*32,21*32,0,gender,"Raw Vodka",1); //player object is created and gender variable is used
-  Player enemy=new Player (15*32,9*32,0,true,"Monster",1);
+  Player player = new Player (2*32,22*32,0,false,"Potato",1);
   double disx, disy;
-  int num = 0;
-  // JButton choice[] = new JButton[1]; //for quit button
   
-  //=================================<Panel constructor>==========================
-  public skynet (boolean gender, String name) throws IOException
-  {// start of panel setup
-   // System.out.println (name);
-    player = new Player (2*32,21*32,0,gender,name,1); //player object is created and gender variable is used
-    //player = new Player (2*32,21*32,0,gender,"Raw Vodka",1); //player object is created and gender variable is used
-    
-    // Creating JPanel for the background and JPanel for interations (options)
-    setLayout (new BorderLayout ());// Use BorderLayout for main panel
-    JPanel background = new JPanel (); // Create a content panel to hold the backgournd images
-    background.setLayout(new BorderLayout ());// sets layout to null so that set bounds can be used 
-    
-    // Colouring panels  
-    background.setBackground(Color.BLACK);
-    //timer setup   
-    t.addActionListener(new TimerListener());
-    background.addKeyListener(new playerListener());
-    // Creating Drawing Area and Panel Setup
-    DrawArea playfield = new DrawArea (1000, 1000);
-//    choice[0] = new JButton("Quit"); // create quit button
-//    playfield.add(choice[0], "East"); // add to board
-//    choice[0].addActionListener(this); // link to listener
-    
-    background.add(playfield); // Output area
-    add("Center",background);
-    setContentPane(background);
-    background.setFocusable(true);
-    pack();
-    // Game window Setup  
-    setTitle("Official RPG");  //CHANGE LATER
-    background.setPreferredSize (new Dimension (1000,800));
-    setSize(1080,825); //Sets the JFrame size
-    setVisible(true); //Reveals JFrame
-    setResizable(false); 
-    setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
-    setLocationRelativeTo(null);//centers window on launch  
-  }
-  //==================================<method for quit button>=========================
-//  public void actionPerformed (ActionEvent e)
-//  {   
-//    if (e.getActionCommand().equals("Quit")) { //if the user presses the first button
-//     System.exit(0);
-//    }
-//    
-//  }
 //==================================<Image Method>====================================
   public static Image loadImage (String name)  //Loads image from file
   { Image img = null;
@@ -334,29 +26,62 @@ class skynet extends JFrame //implements ActionListener
 //===============================<Update>===========================================
   public void update ()
   {repaint();}
-  
-//=====================================<Map class>=====================================================================
-  class Map    
+//=====================================<>===========================================
+  class Item
   {
+    int[] id;
+    boolean[] onscreen;
+    int[] xpos, ypos;
+    
+    public Item (int lvl)
+    {  
+    }
+    public scanner loader ()
+    {
+       Scanner sc = null;
+       try{ File level = new File("res/text/items/" + item[lvl] + ".txt");
+       sc = new Scanner(level);
+       }catch (IOException e){}
+       return sc;
+    }
+    
+  }
+  
+  class Map extends Item    
+  {
+    
     char[][] floor = new char[25][25];
     String[] map = new String[] {"map1", "map2", "map3"};
     int lvl;
     Image pic;
     
-    public Map (int l)throws IOException 
-    {lvl = l;
-      this.loadMap();}
+    public Map (int l)
+    {super(l);
+      lvl = l;
+       this.loadMap();}
     
-    public void loadMap() throws IOException 
+    public Scanner load()
     {
-      File level = new File("res/text/maps/" + map[lvl] + ".txt");
+      Scanner sc = null;
+      try{ File level = new File("res/text/maps/" + map[lvl] + ".txt");
       pic = loadImage("res/images/maps/" + map[lvl] + ".png");
-      Scanner sc = new Scanner(level);
-      String  line="";
-      for (int y = 0; y < 25; y++) 
-      { line = sc.nextLine();
+      sc = new Scanner(level);
+      }catch (IOException e){}
+      
+      return sc;
+    }
+    
+    public void loadMap() 
+    {
+      Scanner sc = this.load(); 
+      
+      String  line = "";
+     
+        for (int y = 0; y < 25; y++) 
+        {line = sc.nextLine();
         for (int x = 0; x < 25; x++)
-        {floor[x][y] = line.charAt(x);}}}
+        {floor[x][y] = line.charAt(x);} }
+     }
     
     public Image getMap()
     {return pic;}
@@ -364,57 +89,62 @@ class skynet extends JFrame //implements ActionListener
     public char getFloorID (int x, int y)
     {return floor[x][y];}
     
-  }
-//==================================<Player class>=====================================================================
-  class Player {
-    int identity;
-    int xpos, ypos;
-    int velx, vely;
-    boolean status, setGender; //true for female, false for male;
-    String setName;
-    private boolean [] inventory = new boolean [3]; //stores 
-    int direction;
     
-    public Player (int x, int y, int id, boolean gender, String name, int dir) { //constructor
-      identity = id;
-      xpos=x;
-      ypos=y;
-      status = true;
-      setGender = gender;
-      setName = name;
-      direction = dir;
-    }
-    public int getID() { //retrieve the identity of the player to see whether the object is a player or enemy (player=1, enemy=0)
-      return identity; 
-    }
-    public int getX() { //retrieve the players y position 
-      return xpos; 
-    }
-    public int getY() { //retrieve the players x position
-      return ypos; 
-    }
-    public int getVelX() { //retrieve the players y position 
-      return velx; 
-    }
-    public int getVelY() { //retrieve the players y position 
-      return vely; 
-    } 
-    public void changeX(int num) { //change the enemy's x position
-      int x = xpos+velx ,y = ypos +vely;
+    public void changeMap(int l)
+    {lvl = l;
+      this.loadMap();}
+    
+  }
+    
+    class Player {
+      int identity;
+      int xpos, ypos;
+      int velx, vely;
+      boolean status, setGender; //true for female, false for male;
+      String setName;
+      private boolean [] inventory = new boolean [3]; //stores 
+      int direction;
       
+      public Player (int x, int y, int id, boolean gender, String name, int dir) { //constructor
+        identity = id;
+        xpos=x;
+        ypos=y;
+        status = true;
+        setGender = gender;
+        setName = name;
+        direction = dir;
+      }
+      public int getID() { //retrieve the identity of the player to see whether the object is a player or enemy (player=1, enemy=0)
+        return identity; 
+      }
+      public int getX() { //retrieve the players y position 
+        return xpos; 
+      }
+      public int getY() { //retrieve the players x position
+        return ypos; 
+      }
+       public int getVelX() { //retrieve the players y position 
+        return velx; 
+      }
+        public int getVelY() { //retrieve the players y position 
+        return vely; 
+      } 
+      public void changeX(int num) { //change the enemy's x position
+        int x = xpos+velx ,y = ypos +vely;
+
       if (num != 0)
       {if (num > 0)//if positive
         { if (floor.getFloorID((x+24)/32 ,(y+24)/32) == 'f')// && floor.getFloorID(x/32 ,(y-24)/32) != 'w')
-        {xpos += num;}
+      {xpos += num;}
         direction = 2;} //right
       else 
       { if (floor.getFloorID((x)/32 ,(y+24)/32) == 'f')// && floor.getFloorID(x/32 ,(y-24)/32) != 'w')
-        {xpos += num;}
-      direction = 3;}} //left
+      {xpos += num;}
+        direction = 3;}} //left
     }
-    public void changeY(int num) { //change the enemy's y position
-      int x = xpos+velx ,y = ypos +vely;
-      
+     public void changeY(int num) { //change the enemy's y position
+       int x = xpos+velx ,y = ypos +vely;
+       
       if(num !=0)
       {if (num >0) //if positive
         { if (floor.getFloorID((x+24)/32,(y+24)/32) != 'w' && floor.getFloorID(x/32 ,(y+32)/32) != 'w')
@@ -422,255 +152,218 @@ class skynet extends JFrame //implements ActionListener
         direction = 1;} //down
       else
       { if (floor.getFloorID((x+24)/32,y/32)!= 'w' && floor.getFloorID(x/32 , (y+24)/32) != 'w')
-        {ypos += num;}
-      direction = 0;} }//up
+      {ypos += num;}
+        direction = 0;} }//up
     }
-    
+     
     public void setVelX(int vel)
     {velx=vel;}
     public void setVelY(int vel) 
     {vely=vel;}
-    public boolean getStatus() { //to see if the player is alive
-      return status;
+      public boolean getStatus() { //to see if the player is alive
+        return status;
+      }
+   public void changeXY(int x, int y)   
+   {xpos =x;
+   ypos =y;}
+      
+      public boolean getGender() { //if it is true then female, false=male
+        return setGender;
+      }
+      public void getItem(int num){ //change item entered (based on the number ID) to true so the player has picked up the object
+        inventory [num] = true;
+      }  
+      public int getDirection(){ //draw class will have 4 numbers each assigned an arrow key
+        return direction;  
+      }
     }
-    
-    public boolean getGender() { //if it is true then female, false=male
-      return setGender;
+//=================================<Panel constructor>============================== 
+    public OJ_RPG_2018 () throws IOException
+    {// start of panel setup
+      // Creating JPanel for the background and JPanel for interations (options)
+      setLayout (new BorderLayout ());// Use BorderLayout for main panel
+      JPanel background = new JPanel (); // Create a content panel to hold the backgournd images
+      background.setLayout(new BorderLayout ());// sets layout to null so that set bounds can be used 
+      // timer setup   
+      
+      // Colouring panels  
+      background.setBackground(Color.BLACK);
+      //timer setup   
+      t.addActionListener(new TimerListener());
+      background.addKeyListener(new playerListener());
+      // Creating Drawing Area and Panel Setup
+      DrawArea playfield = new DrawArea (1000, 1000);
+      background.add(playfield); // Output area
+      add("Center",background);
+      setContentPane(background);
+      background.setFocusable(true);
+      pack();
+      // Game window Setup  
+      setTitle("Hangman Plus");
+      background.setPreferredSize (new Dimension (1000,800));
+      setSize(1080,825); //Sets the JFrame size
+      setVisible(true); //Reveals JFrame
+      setResizable(false); 
+      setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
+      setLocationRelativeTo(null);//centers window on launch  
     }
-    public String getName() { //if it is true then female, false=male
-      return setName;
-    }
-    public void getItem(int num){ //change item entered (based on the number ID) to true so the player has picked up the object
-      inventory [num] = true;
-    }  
-    public int getDirection(){ //draw class will have 4 numbers each assigned an arrow key
-      return direction;  
-    }
-    
-//=====================================<Enemy method>================================================== 
-    public void EnemyAI (Player hero, Map floor) //hero has id = 1, enemy has id = 2
-    { //25 by 25 map tile is  32by32
-      if (this.status)
-      {
-        int dx = hero.getX()/32 - this.getX()/32; //distance between player and enemy in x direction
-        //System.out.println ("dx = " + dx);
-        int dy = hero.getY()/32 - this.getY()/32; //distance between player and enemy in y direction
-        //System.out.println ("dy = " + dy);
-        double ds = Math.sqrt( (dx*dx+0.0) + (dy*dy+0.0) ); //find distance between player position and enemy position
-        //System.out.println ("ds = " + ds);
+//=======================================================================================================    
+    class DrawArea extends JPanel
+    {//start of drawarea
+      // load images for use
+      
+      public DrawArea (int width, int height)// Create panel of given size
+      {//start of drawarea
+        this.setBounds( 0, 0, width, height);//(new Dimension (width, height));
+      }//end of drawarea
+      
+      public void paintComponent (Graphics g)  // g can be passed to a class method
+      {//start of paintComponent
+        Image[][][] tony = loadPlayer();
+        int x,y,z;
+        if (player.getGender())
+        {z=0;}
+        else {z=1;}
         
-        boolean moveX = true;
-        boolean moveY = true;
-        
-        for (int x = (Math.min(hero.getX()/32,this.getX()/32)) ; x < (Math.max(hero.getX()/32,this.getX()/32)) ; x++)
-        {
-          if (floor.getFloorID( x,this.getY()/32) == 'w')
-          {
-            moveX = false;
-          }
-        }
-        for (int y = (Math.min(hero.getY()/32,this.getY()/32)) ; y < (Math.max(hero.getY()/32,this.getY()/32)) ; y++)
-        {
-          if (floor.getFloorID( this.getX()/32,y) == 'w')
-          {
-            moveY = false;
-          }
-        }
-        
-        if(moveX)
-        {
-          if (true)//test
-          {
-            //when dx is larger than dy
-            if ( Math.abs(dx) >= Math.abs(dy)) //if x direction is farther than y - move in x direction
-            {
-              if (floor.getFloorID( this.getX()/32+(Integer.signum(dx)),this.getY()/32) == 'f' && floor.getFloorID(this.getX()/32,this.getY()/32+(Integer.signum(dy))) == 'f' )//if spot to the right/left and up/down is empty
-              {this.changeX(Integer.signum(dx)*5); //move diagonaly 1 tile
-                this.changeY(Integer.signum(dy)*5);}
-              
-              else if (floor.getFloorID( this.getX()/32+(Integer.signum(dx)),this.getY()/32) == 'f')//if spot to the right/left is empty
-              {this.changeX(Integer.signum(dx)*5);}//move 1 tile in that direction
-              
-              else if (floor.getFloorID(this.getX()/32,this.getY()/32+(Integer.signum(dy))) == 'f')//if spot above/below is empty
-              {this.changeY(Integer.signum(dy)*5);}//move 1 tile in that direction
-            }
-            //when dy is larger than dx
-            if ( Math.abs(dy) > Math.abs(dx)) //if y direction is farther than x - move in y direction
-            {
-              if (floor.getFloorID( this.getX()/32+(Integer.signum(dx)),this.getY()/32) == 'f' && floor.getFloorID(this.getX()/32,this.getY()/32+(Integer.signum(dy))) == 'f' )//if spot to the right/left and up/down is empty
-              {this.changeX(Integer.signum(dx)*5); //move diagonaly 1 tile
-                this.changeY(Integer.signum(dy)*5);}
-              
-              else if (floor.getFloorID(this.getX()/32,this.getY()/32+(Integer.signum(dy))) == 'f')//if spot above/below is empty
-              {this.changeY(Integer.signum(dy)*5);}//move 1 tile in that direction
-              
-              else if (floor.getFloorID(this.getX()/32+(Integer.signum(dx)),this.getY()/32) == 'f')//if spot to the right/left is empty
-              {this.changeX(Integer.signum(dx)*5);}//move 1 tile in that direction
-            }
-          }
-          
-          if(moveY)
-          {
-            if (true)//test
-            {
-              //when dx is larger than dy
-              if ( Math.abs(dx) >= Math.abs(dy)) //if x direction is farther than y - move in x direction
-              {
-                if (floor.getFloorID( this.getX()/32+(Integer.signum(dx)),this.getY()/32) == 'f' && floor.getFloorID(this.getX()/32,this.getY()/32+(Integer.signum(dy))) == 'f' )//if spot to the right/left and up/down is empty
-                {this.changeX(Integer.signum(dx)*5); //move diagonaly 1 tile
-                  this.changeY(Integer.signum(dy)*5);} 
-                
-                else if (floor.getFloorID( this.getX()/32+(Integer.signum(dx)),this.getY()/32) == 'f')//if spot to the right/left is empty
-                {this.changeX(Integer.signum(dx)*5);}//move 1 tile in that direction
-                
-                else if (floor.getFloorID(this.getX()/32,this.getY()/32+(Integer.signum(dy))) == 'f')//if spot above/below is empty
-                {this.changeY(Integer.signum(dy)*5);}//move 1 tile in that direction
-              }
-              //when dy is larger than dx
-              if ( Math.abs(dy) > Math.abs(dx)) //if y direction is farther than x - move in y direction
-              {
-                if (floor.getFloorID( this.getX()/32+(Integer.signum(dx)),this.getY()/32) == 'f' && floor.getFloorID(this.getX()/32,this.getY()/32+(Integer.signum(dy))) == 'f' )//if spot to the right/left and up/down is empty
-                {this.changeX(Integer.signum(dx)*5); //move diagonaly 1 tile
-                  this.changeY(Integer.signum(dy)*5);}
-                
-                else if (floor.getFloorID(this.getX()/32,this.getY()/32+(Integer.signum(dy))) == 'f')//if spot above/below is empty
-                {this.changeY(Integer.signum(dy)*5);}//move 1 tile in that direction
-                
-                else if (floor.getFloorID(this.getX()/32+(Integer.signum(dx)),this.getY()/32) == 'f')//if spot to the right/left is empty
-                {this.changeX(Integer.signum(dx)*5);}//move 1 tile in that direction
-              }
-            }
-          }
-          
-        }
+        y = player.getDirection();
+        //System.out.println("<"+y+">");
+        g.drawImage(floor.getMap(),0,0,null);
+           for (int a = 0; a < 25; a++) 
+     {for (int b = 0; b < 25; b++)
+     {if (floor.getFloorID(b,a) =='f')
+       {g.setColor(Color.white);
+       g.fillRect(0+(32*b),0+(32*a),32,32);}}}
+               
+        if (!walk)
+        {g.drawImage(tony[z][y][0], player.getX(), player.getY()-16,null);}
+        else{g.drawImage(tony[z][y][num],player.getX(), player.getY()-16,null);}
+
       }
       
-    }
-  }
-  
-//=======================================<DrawArea class>================================================================    
-  class DrawArea extends JPanel
-  {//start of drawarea
-    // load images for use
-    
-    public DrawArea (int width, int height)// Create panel of given size
-    {//start of drawarea
-      this.setBounds( 0, 0, width, height);//(new Dimension (width, height));
-    }//end of drawarea
-    
-    public void paintComponent (Graphics g)  // g can be passed to a class method
-    {//start of paintComponent
-      Image[][][] tony = loadPlayer();
-      int x,y,z;
-      if (player.getGender() == true) //calling getGender return method to see if gender is true or false 
-      {z=0;}
-      else {z=1;}
-      
-      y = player.getDirection();
-      //System.out.println("<"+y+">");
-      g.drawImage(floor.getMap(),0,0,null);
-      
-      
-      if (!walk)
-      {g.drawImage(tony[z][y][0], player.getX(), player.getY()-16,null);}
-      else{g.drawImage(tony[z][y][num],player.getX(), player.getY()-16,null);}
-      
-      Image[][][] monster = loadPlayer();
-      g.drawImage(monster[0][1][0], enemy.getX(), enemy.getY()-16,null);
-    }
-    
-    public Image[][][] loadPlayer()
-    {
-      Image[][][] player = new Image[2][4][3];//z/y/x
-      for (int z = 0; z < 1; z++)
-      {for (int y = 0; y < 4; y++)
+      public Image[][][] loadPlayer()
+      {
+        Image[][][] player = new Image[2][4][3];//z/y/x
+        for (int z = 0; z < 2; z++)
+        {for (int y = 0; y < 4; y++)
         {for (int x = 0; x < 3; x++)
-        {player[z][y][x] = loadImage("res/images/player/"+z+"/"+y+x+".png");
+          {player[z][y][x] = loadImage("res/images/player/"+z+"/"+y+x+".png");
         }}}
       return player;}
-    
-  }//end of drawarea
-  
-//==================================================================================
-  //                                 Listeners                                  \\
-//==================================================================================
-  public class TimerListener implements ActionListener //reacts to timer
-  {//start
-    int steps = 0;
-    
-    TimerListener()
-    {//start
-      t.start();//starts timer
-    }//end
-    
-    public void actionPerformed (ActionEvent e)
-    {//start of void     
-      update();//updates graphics
       
+    }//end of drawarea
+    
+//==================================================================================
+    //                                 Constructor                                \\
+//==================================================================================
+    
+    
+//==================================================================================
+    //                                 Listeners                                  \\
+//==================================================================================
+    class TimerListener implements ActionListener //reacts to timer
+    {//start
+      int steps = 0;
+      TimerListener()
+      {//start
+        t.start();//starts timer
+      }//end
+      public void actionPerformed (ActionEvent e)
+      {//start of void
+       
+       update();//updates graphics
+       
       //if (walk)
       //{
-      steps();
-      enemy.EnemyAI(player,floor);
-      player.changeY(player.getVelY());
-      player.changeX(player.getVelX());//}
-      
+        steps();
+        player.changeY(player.getVelY());
+        player.changeX(player.getVelX());//}
       //else{}
-    }//end of void
-    
-    public void steps()
-    {
-      steps++;
-      if (steps == 1)
-      { num = 1;}
-      else if (steps == 2)
-      {num = 0;}
-      else if (steps == 3)
-      { num = 2;}
-      else if (steps == 4)
-      {num = 0;}
-      else {num = 0;
-        steps = 0;} 
-    }    
-  }//end of class
-//==========================================================================================================================
-  public class playerListener implements KeyListener
-  {   
-    public playerListener()       {} 
-    
-    @Override
-    public void keyTyped(KeyEvent e) { // respond to keys typed
-    }
-    
-    @Override
-    public void keyPressed(KeyEvent e) 
-    {     
-      //System.out.println("hi");
-      walk = true;
-      int x, y; 
-      x = player.getX();
-      y = player.getY();
-      //System.out.println(code);
-      if(e.getKeyCode() == KeyEvent.VK_UP )//&& floor.getFloorID(x,y-1) != 'w')
-      {player.setVelY(-8);}
-      else if(e.getKeyCode() == KeyEvent.VK_DOWN)// && floor.getFloorID(x,y+1) != 'w')
-      {player.setVelY(8);}
-      else if(e.getKeyCode() == KeyEvent.VK_LEFT)// && floor.getFloorID(x-1,y) != 'w')
-      {player.setVelX(-8);}
-      else if(e.getKeyCode() == KeyEvent.VK_RIGHT)// && floor.getFloorID(x+1,y) != 'w')
-      {player.setVelX(8);}
-    }
-    @Override
-    public void keyReleased(KeyEvent e) { // All interface methods must be defined
+      }//end of void
       
-      if(e.getKeyCode() == KeyEvent.VK_UP)
-      {player.setVelY(0);}
-      else if(e.getKeyCode() == KeyEvent.VK_DOWN)
-      {player.setVelY(0);}
-      else if(e.getKeyCode() == KeyEvent.VK_LEFT)
-      {player.setVelX(0);}
-      else if(e.getKeyCode() == KeyEvent.VK_RIGHT)
-      {player.setVelX(0);}  
-      walk = false;}   
+      
+      public void steps()
+     {
+       
+       //try{
+         // Thread.sleep(5);}
+        //catch(InterruptedException e){}
+       
+       steps++;
+          if (steps == 1)
+          { num = 1;}
+        else if (steps == 2)
+        {num = 0;}
+        else if (steps == 3)
+        { num = 2;}
+        else if (steps == 4)
+        {num = 0;}
+        else {num = 0;
+        steps = 0;}
+//        try{
+//          Thread.sleep(5);}
+//        catch(InterruptedException e){}
+        
+     }
+      
+      
+    }//end of class
+//==============================================================================
+    class playerListener implements KeyListener
+    {
+      
+      public playerListener()       {}
+      
+      @Override
+      public void keyTyped(KeyEvent e) { // respond to keys typed
+        
+      }
+      
+      @Override
+      public void keyPressed(KeyEvent e) 
+  {
+       
+        //System.out.println("hi");
+        walk = true;
+        int x, y; 
+        x = player.getX();
+        y = player.getY();
+        //System.out.println(code);
+        if(e.getKeyCode() == KeyEvent.VK_UP )//&& floor.getFloorID(x,y-1) != 'w')
+        {player.setVelY(-8);}
+        else if(e.getKeyCode() == KeyEvent.VK_DOWN)// && floor.getFloorID(x,y+1) != 'w')
+        {player.setVelY(8);}
+        else if(e.getKeyCode() == KeyEvent.VK_LEFT)// && floor.getFloorID(x-1,y) != 'w')
+        {player.setVelX(-8);}
+         else if(e.getKeyCode() == KeyEvent.VK_RIGHT)// && floor.getFloorID(x+1,y) != 'w')
+         {player.setVelX(8);}
+         else if(e.getKeyCode() == KeyEvent.VK_A)// && floor.getFloorID(x+1,y) != 'w')
+         { player.changeXY(2*32, 22*32);
+           ///System.out.println("<"+lvl+">"); //testing
+           if (lvl >= 0 && lvl <2)
+           {lvl++;}
+           else{lvl = 0;}
+            floor.changeMap(lvl);
+         }
+      }
+      @Override
+      public void keyReleased(KeyEvent e) { // All interface methods must be defined
+        
+        if(e.getKeyCode() == KeyEvent.VK_UP)
+        {player.setVelY(0);}
+        else if(e.getKeyCode() == KeyEvent.VK_DOWN)
+        {player.setVelY(0);}
+        else if(e.getKeyCode() == KeyEvent.VK_LEFT)
+        {player.setVelX(0);}
+        else if(e.getKeyCode() == KeyEvent.VK_RIGHT)
+        {player.setVelX(0);}  
+        walk = false;}
+      
+     
   }
-
+//==================================================================================    
+  public static void main(String[] args) throws IOException
+  {///start of main
+    OJ_RPG_2018 game = new  OJ_RPG_2018 ();
+    game.setVisible (true);
+  }//end of main
 }///end of class
