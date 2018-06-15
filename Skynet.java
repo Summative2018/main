@@ -15,6 +15,7 @@ public class Skynet extends JFrame
   boolean walk = false;
   Player player = new Player (2*32,21*32,0,true,"Raw Vodka",1);
   Player enemy = new Player (15*32,9*32,0,true,"Monster",1);
+  static int enemyBound[] = { -1, -1, -1, -1}; // up,down,left,right
   double disx, disy;
   int num = 0;
 //==================================<Image Method>====================================
@@ -137,7 +138,7 @@ public class Skynet extends JFrame
     
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public void EnemyAI (Player hero, Map floor) //hero has id = 1, enemy has id = 2
+    public int[] EnemyAI (Player hero, Map floor, int[] enemyBound) //hero has id = 1, enemy has id = 2
     { //25 by 25 map tile is  32by32
       if (this.status) // if monster is alive
       {
@@ -150,6 +151,31 @@ public class Skynet extends JFrame
         boolean moveX = true; //if monster can see "player" (x direction)
         boolean moveY = true; //if monster can see "player" (y direction)
         int vel = 8; //velocity of monster
+        
+        if (enemyBound[0] == -1)
+        { 
+          enemyBound[3] = this.getX(); enemyBound[2] = this.getX(); enemyBound[0] = this.getY(); enemyBound[1] =this.getY();
+          for (int x = this.getX()/32; x>0; x--)
+          {
+            if (floor.getFloorID( x,this.getY()/32) != 'w') //if there's not a wall
+              enemyBound[2]=x+1;
+          }
+          for (int x = this.getX()/32; x < 25; x++)
+          {
+            if (floor.getFloorID( x,this.getY()/32) != 'w') //if there's not a wall
+              enemyBound[3]=x-1;
+          }
+          for (int y = this.getY()/32; y>0; y--)
+          {
+            if (floor.getFloorID( this.getX()/32,y) != 'w') //if there's not a wall
+              enemyBound[0]=y+1;
+          }
+          for (int y = this.getY()/32; y<25; y++)
+          {
+            if (floor.getFloorID( this.getX()/32,y) != 'w') //if there's not a wall
+              enemyBound[1]=y-1;
+          }
+       }
         
         for (int x = (Math.min(hero.getX()/32,this.getX()/32)) ; x < (Math.max(hero.getX()/32,this.getX()/32)) ; x++) // check tiles between monster and player (x direction)
         {
@@ -167,34 +193,35 @@ public class Skynet extends JFrame
           }
         }
         
-        if(moveX && moveY) //if monster can see you
+        if( this.getY()/32 > enemyBound[0] && this.getY()/32 < enemyBound[1] && this.getX()/32 > enemyBound[2] && this.getX()/32 < enemyBound[3])
         {
-          if (true)//test
+          if(moveX && moveY) //if monster can see you
           {
             //when dx is larger than dy
             if ( Math.abs(dx) >= Math.abs(dy)) //if x direction is farther than y - move in x direction
             { 
-              if (floor.getFloorID( this.getX()/32+(Integer.signum(dx)),this.getY()/32) == 'f')//if spot to the right/left is empty
+              if (floor.getFloorID( this.getX()/32+(Integer.signum(dx)),this.getY()/32) == 'f' && this.getX()/32-1 != enemyBound[2] &&  this.getX()/32+1 != enemyBound[3])//if spot to the right/left is empty
               {this.changeX(Integer.signum(dx)*vel);}//move 1 tile in that direction
               
-              if (floor.getFloorID(this.getX()/32,this.getY()/32+(Integer.signum(dy))) == 'f')//if spot above/below is empty
+              if (floor.getFloorID(this.getX()/32,this.getY()/32+(Integer.signum(dy))) == 'f' && this.getY()/32-1 != enemyBound[0] &&  this.getX()/32+1 != enemyBound[1])//if spot above/below is empty
               {this.changeY(Integer.signum(dy)*vel);}//move 1 tile in that direction
               
             }
             //when dy is larger than dx
             if ( Math.abs(dy) > Math.abs(dx)) //if y direction is farther than x - move in y direction
             {
-              if (floor.getFloorID(this.getX()/32,this.getY()/32+(Integer.signum(dy))) == 'f')//if spot above/below is empty
+              if (floor.getFloorID(this.getX()/32,this.getY()/32+(Integer.signum(dy))) == 'f' && this.getY()/32-1 != enemyBound[0] &&  this.getX()/32+1 != enemyBound[1])//if spot above/below is empty
               {this.changeY(Integer.signum(dy)*vel);}//move 1 tile in that direction
               
-              if (floor.getFloorID(this.getX()/32+(Integer.signum(dx)),this.getY()/32) == 'f')//if spot to the right/left is empty
+              if (floor.getFloorID(this.getX()/32+(Integer.signum(dx)),this.getY()/32) == 'f' && this.getX()/32-1 != enemyBound[2] &&  this.getX()/32+1 != enemyBound[3])//if spot to the right/left is empty
               {this.changeX(Integer.signum(dx)*vel);}//move 1 tile in that direction
               
             }
           }
+          
         }
       }
-      
+      return enemyBound;
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   }
@@ -298,7 +325,7 @@ public class Skynet extends JFrame
       //if (walk)
       //{
       steps();
-      enemy.EnemyAI(player,floor);
+      enemy.EnemyAI(player,floor,enemyBound);
       player.changeY(player.getVelY());
       player.changeX(player.getVelX());//}
       //else{}
