@@ -3,6 +3,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.Timer; // Allow use of timer
 import javax.imageio.*;
+import java.util.ArrayList; //allows use of Arraylist  
 import java.io.*;
 import java.util.*;
 import java.util.Scanner;
@@ -271,13 +272,13 @@ class character extends JFrame implements ActionListener
 class skynet extends JFrame //implements ActionListener
 {// start
   Timer t = new Timer(80,null);// updates graphics and game
-  Map floor = new Map(0);
+  int num = 0, lvl =0;
+  Map floor = new Map(lvl);
   boolean walk = false;
- 
+  Entities en = new Entities(lvl);
   Player player;// = new Player (2*32,21*32,0,gender,"Raw Vodka",1); //player object is created and gender variable is used
   Player enemy=new Player (15*32,9*32,0,true,"Monster",1);
-  double disx, disy;
-  int num = 0, lvl =0;
+  static int enemyBound[] = { -1, -1, -1, -1}; // up,down,left,right
   // JButton choice[] = new JButton[1]; //for quit button
   
   //=================================<Panel constructor>==========================
@@ -285,7 +286,6 @@ class skynet extends JFrame //implements ActionListener
   {// start of panel setup
    // System.out.println (name);
     player = new Player (2*32,21*32,0,gender,name,1); //player object is created and gender variable is used
-    //player = new Player (2*32,21*32,0,gender,"Raw Vodka",1); //player object is created and gender variable is used
     
     // Creating JPanel for the background and JPanel for interations (options)
     setLayout (new BorderLayout ());// Use BorderLayout for main panel
@@ -317,14 +317,6 @@ class skynet extends JFrame //implements ActionListener
     setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
     setLocationRelativeTo(null);//centers window on launch  
   }
-  //==================================<method for quit button>=========================
-//  public void actionPerformed (ActionEvent e)
-//  {   
-//    if (e.getActionCommand().equals("Quit")) { //if the user presses the first button
-//     System.exit(0);
-//    }
-//    
-//  }
 //==================================<Image Method>====================================
   public static Image loadImage (String name)  //Loads image from file
   { Image img = null;
@@ -336,28 +328,230 @@ class skynet extends JFrame //implements ActionListener
   {repaint();}
   
 //=====================================<Map class>=====================================================================
-  class Item
-  {
-    int[] id;
+  class Entities
+  {//s - sword
+   //k - key
+   //e - enemy 
     boolean[] onscreen;
     int[] xpos, ypos;
-    String[] item "sword", "key", "gem";
+    String[] list;
+    char[] id;
+    int enemies = 0, swords = 0, keys = 0;
+    int[] lines = new int[] {4,6,8};
+    int velx =6, vely = 6;
     
-    public Item (int lvl)
+    public Entities (int lvl)
     {  
+      this.makeEntities(lvl);
     }
-    public Scanner loader (int lvl)
+    public Scanner loadList (int lvl)
     {
        Scanner sc = null;
-       try{ File level = new File("res/text/items/" + item[lvl] + ".txt");
+       try{ File level = new File("res/text/entities/entity" + lvl + ".txt");
        sc = new Scanner(level);
        }catch (IOException e){}
        return sc;
     }
+    public void makeEntities (int lvl)
+    {
+      list = new String[lines[lvl]];
+      onscreen = new boolean[lines[lvl]];
+      Scanner sc = this.loadList(lvl);
+      
+      for(int x = 0; x < lines[lvl] ; x++)
+      {
+        list[x] = sc.nextLine();
+        System.out.println(list[x]);
+      }  
+      xpos = new int[lines[lvl]];
+      ypos = new int[lines[lvl]];
+      id = new char[lines[lvl]];
+      System.out.println("hi");
+      
+    for (int y = 0; y < lines[lvl] ; y++)  
+    {
+      id[y] = list[y].charAt(0);
+      System.out.println(id[y]);
+      
+      if(id[y] == 's')
+      {this.makeSword(y);
+      System.out.println("bye");}
+      else if (id[y] == 'k')
+      {this.makeKey(y);}
+      else if (id[y] == 'e')
+      {this.makeEnenmy(y);}
+      else{System.out.println("bye");}
+      onscreen[y] = true;   
+    }
     
+    }
+    
+    public void makeSword(int x)
+    {
+      xpos[x] = ((int)list[x].charAt(1) - 65) *32;   
+      ypos[x] = ((int)list[x].charAt(2) - 65) *32;
+      System.out.println(xpos[x]);
+      System.out.println(ypos[x]);
+      swords++;
+    }
+     public void makeKey(int x)
+    {
+      xpos[x] = ((int)list[x].charAt(1) -65) *32;   
+      ypos[x] = ((int)list[x].charAt(2) -65) *32; 
+      keys++;
+    }
+      public void makeEnenmy(int x)
+    {
+      xpos[x] = ((int)list[x].charAt(1) -65) *32;   
+      ypos[x] = ((int)list[x].charAt(2) -65) *32;
+      enemies++;
+    }    
+     public int numofEn (int x)
+     {
+       if(x == 1)
+         return swords;
+       if(x == 2)
+         return keys;
+       if(x == 3)
+         return enemies;
+       else
+       return 0;
+     }
+    public int getX(int x)
+    {
+      return xpos[x];
+    }
+    public int getY(int x)
+    {
+      return ypos[x];
+    }
+    public boolean appear(int x)
+    {
+    return onscreen[x];
+    } 
+    public int getSize()
+    {
+      return list.length;
+    }
+    public char getID(int x)
+    {
+      return id[x];
+    }
+    
+    //=======================================
+     public void changeX(int num, int in) { //change the enemy's x position
+      int x = xpos[in] + velx ,y = ypos[in] + vely;
+         if (floor.getFloorID((x+24)/32 ,(y+26)/32) != 'f')// && floor.getFloorID(x/32 ,(y-24)/32) != 'w')
+         {xpos[in] += num;} //right
+      else 
+      { if (floor.getFloorID((x)/32 ,(y+26)/32) != 'f')// && floor.getFloorID(x/32 ,(y-24)/32) != 'w')
+        {xpos[in] += num;}} //left
+    }
+    public void changeY(int num, int in) { //change the enemy's y position
+      int x = xpos[in] +velx ,y = ypos[in] +vely;
+         if (floor.getFloorID((x+26)/32,(y+26)/32) != 'f' && floor.getFloorID(x/32 ,(y+32)/32) != 'w')
+        {ypos[in] += num;} //down
+      else
+      { if (floor.getFloorID((x+26)/32,y/32)!= 'f' && floor.getFloorID(x/32 , (y+24)/32) != 'w')
+        {ypos[in] += num;}}//up
+    }
+    //====================== tony =====================
+    public int[] EnemyAI (Player p,int index, Map floor, int[] enemyBound) //hero has id = 1, enemy has id = 2
+    { //25 by 25 map tile is  32by32
+      if (onscreen[index]) // if monster is alive
+      {
+        int dx = p.getX()/32 - this.getX(index)/32; //distance between player and enemy in x direction
+        //System.out.println ("dx = " + dx);
+        int dy = p.getY()/32 - this.getY(index)/32; //distance between player and enemy in y direction
+        //System.out.println ("dy = " + dy);
+        double ds = Math.sqrt( (dx*dx+0.0) + (dy*dy+0.0) ); //find distance between player position and enemy position
+        //System.out.println ("ds = " + ds);
+        boolean moveX = true; //if monster can see "player" (x direction)
+        boolean moveY = true; //if monster can see "player" (y direction)
+        int vel = 6; //velocity of monster
+        
+        if (enemyBound[0] == -1)
+        { 
+          enemyBound[3] = this.getX(index); enemyBound[2] = this.getX(index); enemyBound[0] = this.getY(index); enemyBound[1] =this.getY(index);
+          for (int x = this.getX(index)/32; x>0; x--)
+          {
+            if (floor.getFloorID( x,this.getY(index)/32) != 'w') //if there's not a wall
+              enemyBound[2]=x+1;
+          }
+          for (int x = this.getX(index)/32; x < 25; x++)
+          {
+            if (floor.getFloorID( x,this.getY(index)/32) != 'w') //if there's not a wall
+              enemyBound[3]=x-1;
+          }
+          for (int y = this.getY(index)/32; y>0; y--)
+          {
+            if (floor.getFloorID( this.getX(index)/32,y) != 'w') //if there's not a wall
+              enemyBound[0]=y+1;
+          }
+          for (int y = this.getY(index)/32; y<25; y++)
+          {
+            if (floor.getFloorID( this.getX(index)/32,y) != 'w') //if there's not a wall
+              enemyBound[1]=y-1;
+          }
+       }
+        
+        for (int x = (Math.min(en.getX(index)/32,this.getX(index)/32)) ; x < (Math.max(p.getX()/32,this.getX(index)/32)) ; x++) // check tiles between monster and player (x direction)
+        {
+          if (floor.getFloorID( x,this.getY(index)/32) == 'w') //if there's a wall
+          {
+            moveX = false; //monster cant see player (monster stops moving)
+            
+          }
+        }
+        for (int y = (Math.min(p.getY()/32,this.getY(index)/32)) ; y < (Math.max(p.getY()/32,this.getY(index)/32)) ; y++) // check tiles between monster and player (y direction)
+        {
+          if (floor.getFloorID( this.getX(index)/32,y) == 'w') //if there's a wall
+          {
+            moveY = false; //monster cant see player (monster stops moving) 
+          }
+        }
+        
+        if( this.getY(index) > enemyBound[0] *32 && this.getY(index) < enemyBound[1] *32 && this.getX(index) > enemyBound[2]*32 && this.getX(index) < enemyBound[3]*32)
+        {
+          if(moveX && moveY) //if monster can see you
+          {
+            //when dx is larger than dy
+            if ( Math.abs(dx) >= Math.abs(dy)) //if x direction is farther than y - move in x direction
+            { 
+              if (this.getX(index)-26 != enemyBound[2] &&  this.getX(index)+32 < enemyBound[3])//if spot to the right/left is empty
+              {this.changeX(Integer.signum(dx)*vel, index);}//move 1 tile in that direction
+              
+              if (this.getY(index)-32 != enemyBound[0] &&  this.getX(index)+26 < enemyBound[1])//if spot above/below is empty
+              {this.changeY(Integer.signum(dy)*vel, index);}//move 1 tile in that direction
+              
+            }
+            //when dy is larger than dx
+            if ( Math.abs(dy) > Math.abs(dx)) //if y direction is farther than x - move in y direction
+            {
+              
+              if (this.getY(index)-32 <= enemyBound[0] &&  this.getX(index)+26 < enemyBound[1])//if spot above/below is empty
+              {this.changeY(Integer.signum(dy)*vel, index);}//move 1 tile in that direction
+              
+              if (floor.getFloorID(this.getX(index)/32+(Integer.signum(dx)),this.getY(index)/32) == 'f' && this.getX(index)-26 <= enemyBound[2] &&  this.getX(index)+26 < enemyBound[3])//if spot to the right/left is empty
+              {this.changeX(Integer.signum(dx)*vel, index);}//move 1 tile in that direction
+              
+            }
+          }
+          
+        }
+      }
+      return enemyBound;
+    }
+    
+    
+    
+    
+    
+    
+    //===============================================
   }
   
-  class Map extends Item    
+  class Map  
   {
     
     char[][] floor = new char[25][25];
@@ -366,8 +560,7 @@ class skynet extends JFrame //implements ActionListener
     Image pic;
     
     public Map (int l)
-    {super(l);
-      lvl = l;
+    { lvl = l;
        this.loadMap();}
     
     public Scanner load()
@@ -446,11 +639,11 @@ class skynet extends JFrame //implements ActionListener
       
       if (num != 0)
       {if (num > 0)//if positive
-        { if (floor.getFloorID((x+24)/32 ,(y+24)/32) == 'f')// && floor.getFloorID(x/32 ,(y-24)/32) != 'w')
+        { if (floor.getFloorID((x+24)/32 ,(y+24)/32) != 'w')// && floor.getFloorID(x/32 ,(y-24)/32) != 'w')
         {xpos += num;}
         direction = 2;} //right
       else 
-      { if (floor.getFloorID((x)/32 ,(y+24)/32) == 'f')// && floor.getFloorID(x/32 ,(y-24)/32) != 'w')
+      { if (floor.getFloorID((x)/32 ,(y+24)/32) != 'w')// && floor.getFloorID(x/32 ,(y-24)/32) != 'w')
         {xpos += num;}
       direction = 3;}} //left
     }
@@ -493,106 +686,9 @@ class skynet extends JFrame //implements ActionListener
    ypos =y;}
     
 //=====================================<Enemy method>================================================== 
-    public void EnemyAI (Player hero, Map floor) //hero has id = 1, enemy has id = 2
-    { //25 by 25 map tile is  32by32
-      if (this.status)
-      {
-        int dx = hero.getX()/32 - this.getX()/32; //distance between player and enemy in x direction
-        //System.out.println ("dx = " + dx);
-        int dy = hero.getY()/32 - this.getY()/32; //distance between player and enemy in y direction
-        //System.out.println ("dy = " + dy);
-        double ds = Math.sqrt( (dx*dx+0.0) + (dy*dy+0.0) ); //find distance between player position and enemy position
-        //System.out.println ("ds = " + ds);
-        
-        boolean moveX = true;
-        boolean moveY = true;
-        
-        for (int x = (Math.min(hero.getX()/32,this.getX()/32)) ; x < (Math.max(hero.getX()/32,this.getX()/32)) ; x++)
-        {
-          if (floor.getFloorID( x,this.getY()/32) == 'w')
-          {
-            moveX = false;
-          }
-        }
-        for (int y = (Math.min(hero.getY()/32,this.getY()/32)) ; y < (Math.max(hero.getY()/32,this.getY()/32)) ; y++)
-        {
-          if (floor.getFloorID( this.getX()/32,y) == 'w')
-          {
-            moveY = false;
-          }
-        }
-        
-        if(moveX)
-        {
-          if (true)//test
-          {
-            //when dx is larger than dy
-            if ( Math.abs(dx) >= Math.abs(dy)) //if x direction is farther than y - move in x direction
-            {
-              if (floor.getFloorID( this.getX()/32+(Integer.signum(dx)),this.getY()/32) == 'f' && floor.getFloorID(this.getX()/32,this.getY()/32+(Integer.signum(dy))) == 'f' )//if spot to the right/left and up/down is empty
-              {this.changeX(Integer.signum(dx)*5); //move diagonaly 1 tile
-                this.changeY(Integer.signum(dy)*5);}
-              
-              else if (floor.getFloorID( this.getX()/32+(Integer.signum(dx)),this.getY()/32) == 'f')//if spot to the right/left is empty
-              {this.changeX(Integer.signum(dx)*5);}//move 1 tile in that direction
-              
-              else if (floor.getFloorID(this.getX()/32,this.getY()/32+(Integer.signum(dy))) == 'f')//if spot above/below is empty
-              {this.changeY(Integer.signum(dy)*5);}//move 1 tile in that direction
-            }
-            //when dy is larger than dx
-            if ( Math.abs(dy) > Math.abs(dx)) //if y direction is farther than x - move in y direction
-            {
-              if (floor.getFloorID( this.getX()/32+(Integer.signum(dx)),this.getY()/32) == 'f' && floor.getFloorID(this.getX()/32,this.getY()/32+(Integer.signum(dy))) == 'f' )//if spot to the right/left and up/down is empty
-              {this.changeX(Integer.signum(dx)*5); //move diagonaly 1 tile
-                this.changeY(Integer.signum(dy)*5);}
-              
-              else if (floor.getFloorID(this.getX()/32,this.getY()/32+(Integer.signum(dy))) == 'f')//if spot above/below is empty
-              {this.changeY(Integer.signum(dy)*5);}//move 1 tile in that direction
-              
-              else if (floor.getFloorID(this.getX()/32+(Integer.signum(dx)),this.getY()/32) == 'f')//if spot to the right/left is empty
-              {this.changeX(Integer.signum(dx)*5);}//move 1 tile in that direction
-            }
-          }
-          
-          if(moveY)
-          {
-            if (true)//test
-            {
-              //when dx is larger than dy
-              if ( Math.abs(dx) >= Math.abs(dy)) //if x direction is farther than y - move in x direction
-              {
-                if (floor.getFloorID( this.getX()/32+(Integer.signum(dx)),this.getY()/32) == 'f' && floor.getFloorID(this.getX()/32,this.getY()/32+(Integer.signum(dy))) == 'f' )//if spot to the right/left and up/down is empty
-                {this.changeX(Integer.signum(dx)*5); //move diagonaly 1 tile
-                  this.changeY(Integer.signum(dy)*5);} 
-                
-                else if (floor.getFloorID( this.getX()/32+(Integer.signum(dx)),this.getY()/32) == 'f')//if spot to the right/left is empty
-                {this.changeX(Integer.signum(dx)*5);}//move 1 tile in that direction
-                
-                else if (floor.getFloorID(this.getX()/32,this.getY()/32+(Integer.signum(dy))) == 'f')//if spot above/below is empty
-                {this.changeY(Integer.signum(dy)*5);}//move 1 tile in that direction
-              }
-              //when dy is larger than dx
-              if ( Math.abs(dy) > Math.abs(dx)) //if y direction is farther than x - move in y direction
-              {
-                if (floor.getFloorID( this.getX()/32+(Integer.signum(dx)),this.getY()/32) == 'f' && floor.getFloorID(this.getX()/32,this.getY()/32+(Integer.signum(dy))) == 'f' )//if spot to the right/left and up/down is empty
-                {this.changeX(Integer.signum(dx)*5); //move diagonaly 1 tile
-                  this.changeY(Integer.signum(dy)*5);}
-                
-                else if (floor.getFloorID(this.getX()/32,this.getY()/32+(Integer.signum(dy))) == 'f')//if spot above/below is empty
-                {this.changeY(Integer.signum(dy)*5);}//move 1 tile in that direction
-                
-                else if (floor.getFloorID(this.getX()/32+(Integer.signum(dx)),this.getY()/32) == 'f')//if spot to the right/left is empty
-                {this.changeX(Integer.signum(dx)*5);}//move 1 tile in that direction
-              }
-            }
-          }
-          
-        }
-      }
-      
-    }
+   
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   }
-  
 //=======================================<DrawArea class>================================================================    
   class DrawArea extends JPanel
   {//start of drawarea
@@ -606,6 +702,7 @@ class skynet extends JFrame //implements ActionListener
     public void paintComponent (Graphics g)  // g can be passed to a class method
     {//start of paintComponent
      Image[][][] tony = loadPlayer();
+     
         int x,y,z;
         if (player.getGender())
         {z=0;}
@@ -619,13 +716,13 @@ class skynet extends JFrame //implements ActionListener
 //     {if (floor.getFloorID(b,a) =='f')
 //       {g.setColor(Color.white);
 //       g.fillRect(0+(32*b),0+(32*a),32,32);}}}
-               
+        drawEn(g);      
         if (!walk)
         {g.drawImage(tony[z][y][0], player.getX(), player.getY()-16,null);}
         else{g.drawImage(tony[z][y][num],player.getX(), player.getY()-16,null);}
       
       Image[][][] monster = loadPlayer();
-      g.drawImage(monster[0][1][0], enemy.getX(), enemy.getY()-16,null);
+      //g.drawImage(monster[0][1][0], enemy.getX(), enemy.getY()-16,null);
     }
     
     public Image[][][] loadPlayer()
@@ -637,6 +734,30 @@ class skynet extends JFrame //implements ActionListener
         {player[z][y][x] = loadImage("res/images/player/"+z+"/"+y+x+".png");
         }}}
       return player;}
+    
+    public void drawEn (Graphics g)
+    {
+     Image s = loadImage("res/images/entities/sword.png");
+     Image k = loadImage("res/images/entities/key.png");
+     Image[] e = new Image[3];
+    
+     for (int y = 0; y < 3; y++)
+     {
+       e[y] = loadImage("res/images/entities/enemy/0/"+y+".png");
+     }
+      g.drawImage(e[num], enemy.getX(), enemy.getY()-16,null);
+      for (int x = 0; x < en.getSize();x++)
+      {
+        if ( en.getID(x) == 's' && en.appear(x))
+         g.drawImage(s, en.getX(x), en.getY(x),null);
+        else if (en.getID(x) == 'k'&& en.appear(x))
+           g.drawImage(k, en.getX(x), en.getY(x),null);
+        else if (en.getID(x) == 'e'&& en.appear(x))
+           g.drawImage(e[num], en.getX(x), en.getY(x)-16,null);
+      }
+      
+      
+    }
     
   }//end of drawarea
   
@@ -659,7 +780,12 @@ class skynet extends JFrame //implements ActionListener
       //if (walk)
       //{
       steps();
-      enemy.EnemyAI(player,floor);
+      for (int x = 0; x < en.getSize(); x++)
+      {
+      if ( en.getID(x) == 'e')   
+      {
+        en.EnemyAI(player,x,floor,enemyBound);}
+      }
       player.changeY(player.getVelY());
       player.changeX(player.getVelX());//}
       
@@ -710,10 +836,13 @@ class skynet extends JFrame //implements ActionListener
       else if(e.getKeyCode() == KeyEvent.VK_A)// && floor.getFloorID(x+1,y) != 'w')
          { player.changeXY(2*32, 22*32);
            ///System.out.println("<"+lvl+">"); //testing
+           
            if (lvl >= 0 && lvl <2)
            {lvl++;}
            else{lvl = 0;}
             floor.changeMap(lvl);
+            if (lvl == 0)
+             en.makeEntities(lvl);
          }
     }
     @Override
