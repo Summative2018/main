@@ -20,11 +20,6 @@ public class OJ_RPG_20183 extends JFrame implements ActionListener
     setLayout (new BorderLayout ());// Use BorderLayout for main panel
     JPanel background = new JPanel (); // Create a content panel to hold the backgournd images
     background.setLayout(new GridLayout ());// sets layout to null so that set bounds can be used 
-    // timer setup   
-    
-    // Colouring panels  
-    //background.setBackground(Color.BLACK);
-    //timer setup   
     
     // Creating Drawing Area and Panel Setup
     DrawArea playfield = new DrawArea (900, 600);
@@ -92,7 +87,6 @@ public class OJ_RPG_20183 extends JFrame implements ActionListener
     
     public void paintComponent (Graphics g)  // g can be passed to a class method
     {//start of paintComponent
-      //setBackground(Color.lightGray); //set colour of the background of window
       g.setFont(new Font("American Typewriter", Font.ITALIC, 24)); //set font and colour
       g.setColor(Color.red);
       g.drawString ("RPG", 426, 160); //prompt user to choose a word to guess
@@ -102,7 +96,7 @@ public class OJ_RPG_20183 extends JFrame implements ActionListener
       g.drawString("1. START GAME", 377, 230); //display options
       g.drawString ("2. VIEW INSTRUCTIONS", 339, 280);
       g.drawString ("3. QUIT", 412, 330); 
-      g.drawString ("Press the correlated button", 330, 470); 
+      g.drawString ("Press the corresponding button", 321, 470); 
     }
     
   }//end of drawarea
@@ -127,7 +121,6 @@ class Instructions extends JFrame
     add(board); //Add to JFrame   
     setTitle ("Instructions Panel"); //set title and size of window
     setSize (860, 700);
-    //setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
     setLocationRelativeTo (null); //center window
     setResizable(false);  //disable users ability to resize window
   }
@@ -156,7 +149,7 @@ class Instructions extends JFrame
       g.drawString("Controls", 370, 385); 
       g.setFont(new Font("Times New Roman", Font.BOLD, 15)); //set font and colour
       g.drawString("The arrow keys will help you move around the level.", 240, 420); 
-      g.drawString("To pick up objects you have to stand on top of them to add them to your inventory. ", 126, 470);     
+      g.drawString("To pick up objects press d to add them to your inventory. ", 230, 470);     
       g.drawString("To exit a room you must have a key in your inventory and walk through the door for it to open. ", 105, 520); 
       g.drawString("To use the sword press s. To view instructions during the game press i.", 168, 570); 
       g.drawString("Good Luck!", 375, 615); 
@@ -231,25 +224,16 @@ class character extends JFrame implements ActionListener
     }
     if (e.getActionCommand().equals("Male")) { //if the user presses the first button
       gender= false;
-      System.out.println (gender);
     }
     if (e.getActionCommand().equals("Female")) { //if the user presses the first button
       gender= true;
-      System.out.println (gender);
     }
     if (e.getActionCommand().equals( "add" ) && !newName.equals (""))
     {
       nameOfPlayer = newName;
     }
   }
-
-//  public boolean returnGender() {
-//    return gender; 
-//  }
-//  public String returnName () {
-//    return nameOfPlayer; 
-//  }
-//  
+  
 //==================================<method for drawarea>=============================================================
   class DrawArea extends JPanel
   {
@@ -282,15 +266,13 @@ class skynet extends JFrame //implements ActionListener
   Map floor = new Map(lvl);
   boolean walk = false;
   Entities en = new Entities(lvl);
-  Player player;// = new Player (2*32,21*32,0,gender,"Raw Vodka",1); //player object is created and gender variable is used
+  Player player; //player object is created and gender variable is used
   Player enemy=new Player (15*32,9*32,0,true,"Monster",1);
   static int enemyBound[] = { -1, -1, -1, -1}; // up,down,left,right
-  // JButton choice[] = new JButton[1]; //for quit button
   boolean end = false;
   //=================================<Panel constructor>==========================
   public skynet (boolean gender, String name) throws IOException
   {// start of panel setup
-   // System.out.println (name);
     player = new Player (2*32,21*32,0,gender,name,1); //player object is created and gender variable is used
     
     // Creating JPanel for the background and JPanel for interations (options)
@@ -305,9 +287,6 @@ class skynet extends JFrame //implements ActionListener
     background.addKeyListener(new playerListener());
     // Creating Drawing Area and Panel Setup
     DrawArea playfield = new DrawArea (1000, 1000);
-//    choice[0] = new JButton("Quit"); // create quit button
-//    playfield.add(choice[0], "East"); // add to board
-//    choice[0].addActionListener(this); // link to listener
     
     background.add(playfield); // Output area
     add("Center",background);
@@ -336,8 +315,8 @@ class skynet extends JFrame //implements ActionListener
 //=====================================<Map class>=====================================================================
   class Entities
   {//s - sword
-   //k - key
-   //e - enemy 
+    //k - key
+    //e - enemy 
     boolean[] onscreen;
     int[] xpos, ypos;
     String[] list;
@@ -352,11 +331,11 @@ class skynet extends JFrame //implements ActionListener
     }
     public Scanner loadList (int lvl)
     {
-       Scanner sc = null;
-       try{ File level = new File("res/text/entities/entity" + lvl + ".txt");
-       sc = new Scanner(level);
-       }catch (IOException e){}
-       return sc;
+      Scanner sc = null;
+      try{ File level = new File("res/text/entities/entity" + lvl + ".txt");
+        sc = new Scanner(level);
+      }catch (IOException e){}
+      return sc;
     }
     public void makeEntities (int lvl)
     {
@@ -374,22 +353,22 @@ class skynet extends JFrame //implements ActionListener
       id = new char[lines[lvl]];
       System.out.println("hi");
       
-    for (int y = 0; y < lines[lvl] ; y++)  
-    {
-      id[y] = list[y].charAt(0);
-      System.out.println(id[y]);
+      for (int y = 0; y < lines[lvl] ; y++)  
+      {
+        id[y] = list[y].charAt(0);
+        System.out.println(id[y]);
+        
+        if(id[y] == 's')
+        {this.makeSword(y);
+          System.out.println("bye");}
+        else if (id[y] == 'k')
+        {this.makeKey(y);}
+        else if (id[y] == 'e')
+        {this.makeEnenmy(y);}
+        else{System.out.println("bye");}
+        onscreen[y] = true;   
+      }
       
-      if(id[y] == 's')
-      {this.makeSword(y);
-      System.out.println("bye");}
-      else if (id[y] == 'k')
-      {this.makeKey(y);}
-      else if (id[y] == 'e')
-      {this.makeEnenmy(y);}
-      else{System.out.println("bye");}
-      onscreen[y] = true;   
-    }
-    
     }
     
     public void makeSword(int x)
@@ -400,29 +379,29 @@ class skynet extends JFrame //implements ActionListener
       System.out.println(ypos[x]);
       swords++;
     }
-     public void makeKey(int x)
+    public void makeKey(int x)
     {
       xpos[x] = ((int)list[x].charAt(1) -65) *32;   
       ypos[x] = ((int)list[x].charAt(2) -65) *32; 
       keys++;
     }
-      public void makeEnenmy(int x)
+    public void makeEnenmy(int x)
     {
       xpos[x] = ((int)list[x].charAt(1) -65) *32;   
       ypos[x] = ((int)list[x].charAt(2) -65) *32;
       enemies++;
     }    
-     public int numofEn (int x)
-     {
-       if(x == 1)
-         return swords;
-       if(x == 2)
-         return keys;
-       if(x == 3)
-         return enemies;
-       else
-       return 0;
-     }
+    public int numofEn (int x)
+    {
+      if(x == 1)
+        return swords;
+      if(x == 2)
+        return keys;
+      if(x == 3)
+        return enemies;
+      else
+        return 0;
+    }
     public int getX(int x)
     {
       return xpos[x];
@@ -433,7 +412,7 @@ class skynet extends JFrame //implements ActionListener
     }
     public boolean appear(int x)
     {
-    return onscreen[x];
+      return onscreen[x];
     } 
     public int getSize()
     {
@@ -445,18 +424,18 @@ class skynet extends JFrame //implements ActionListener
     }
     
     //=======================================
-     public void changeX(int num, int in) { //change the enemy's x position
+    public void changeX(int num, int in) { //change the enemy's x position
       int x = xpos[in] + velx ,y = ypos[in] + vely;
-         if (floor.getFloorID((x+24)/32 ,(y+26)/32) != 'f')// && floor.getFloorID(x/32 ,(y-24)/32) != 'w')
-         {xpos[in] += num;} //right
+      if (floor.getFloorID((x+24)/32 ,(y+26)/32) != 'f')// && floor.getFloorID(x/32 ,(y-24)/32) != 'w')
+      {xpos[in] += num;} //right
       else 
       { if (floor.getFloorID((x)/32 ,(y+26)/32) != 'f')// && floor.getFloorID(x/32 ,(y-24)/32) != 'w')
         {xpos[in] += num;}} //left
     }
     public void changeY(int num, int in) { //change the enemy's y position
       int x = xpos[in] +velx ,y = ypos[in] +vely;
-         if (floor.getFloorID((x+26)/32,(y+26)/32) != 'f' && floor.getFloorID(x/32 ,(y+32)/32) != 'w')
-        {ypos[in] += num;} //down
+      if (floor.getFloorID((x+26)/32,(y+26)/32) != 'f' && floor.getFloorID(x/32 ,(y+32)/32) != 'w')
+      {ypos[in] += num;} //down
       else
       { if (floor.getFloorID((x+26)/32,y/32)!= 'f' && floor.getFloorID(x/32 , (y+24)/32) != 'w')
         {ypos[in] += num;}}//up
@@ -499,7 +478,7 @@ class skynet extends JFrame //implements ActionListener
             if (floor.getFloorID( this.getX(index)/32,y) != 'w') //if there's not a wall
               enemyBound[1]=y-1;
           }
-       }
+        }
         
         for (int x = (Math.min(en.getX(index)/32,this.getX(index)/32)) ; x < (Math.max(p.getX()/32,this.getX(index)/32)) ; x++) // check tiles between monster and player (x direction)
         {
@@ -548,12 +527,10 @@ class skynet extends JFrame //implements ActionListener
       }
       return enemyBound;
     }  
-    //===============================================
   }
   
   class Map  
-  {
-    
+  {   
     char[][] floor = new char[25][25];
     String[] map = new String[] {"map1", "map2", "map3"};
     int lvl;
@@ -561,14 +538,14 @@ class skynet extends JFrame //implements ActionListener
     
     public Map (int l)
     { lvl = l;
-       this.loadMap();}
+      this.loadMap();}
     
     public Scanner load()
     {
       Scanner sc = null;
       try{ File level = new File("res/text/maps/" + map[lvl] + ".txt");
-      pic = loadImage("res/images/maps/" + map[lvl] + ".png");
-      sc = new Scanner(level);
+        pic = loadImage("res/images/maps/" + map[lvl] + ".png");
+        sc = new Scanner(level);
       }catch (IOException e){}
       
       return sc;
@@ -579,12 +556,12 @@ class skynet extends JFrame //implements ActionListener
       Scanner sc = this.load(); 
       
       String  line = "";
-     
-        for (int y = 0; y < 25; y++) 
-        {line = sc.nextLine();
+      
+      for (int y = 0; y < 25; y++) 
+      {line = sc.nextLine();
         for (int x = 0; x < 25; x++)
         {floor[x][y] = line.charAt(x);} }
-     }
+    }
     
     public Image getMap()
     {return pic;}
@@ -599,7 +576,6 @@ class skynet extends JFrame //implements ActionListener
     
   }
   
-     
 //==================================<Player class>=====================================================================
   class Player {
     int identity;
@@ -690,13 +666,10 @@ class skynet extends JFrame //implements ActionListener
     public int getDirection(){ //draw class will have 4 numbers each assigned an arrow key
       return direction;  
     }
-     public void changeXY(int x, int y)   
-   {xpos =x;
-   ypos =y;}
+    public void changeXY(int x, int y)   
+    {xpos =x;
+      ypos =y;}
     
-//=====================================<Enemy method>================================================== 
-   
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   }
 //=======================================<DrawArea class>================================================================    
   class DrawArea extends JPanel
@@ -710,8 +683,8 @@ class skynet extends JFrame //implements ActionListener
     
     public void paintComponent (Graphics g)  // g can be passed to a class method
     {//start of paintComponent
-     Image[][][] tony = loadPlayer();
-     if (!end) {
+      Image[][][] tony = loadPlayer();
+      if (!end) {
         int x,y,z;
         if (player.getGender())
         {z=0;}
@@ -720,23 +693,21 @@ class skynet extends JFrame //implements ActionListener
         y = player.getDirection();
         //System.out.println("<"+y+">");
         g.drawImage(floor.getMap(),0,0,null);
-
+        
         drawEn(g);
         score(g, player.getGender(), player.getName(), player.getSword(), player.getKey()); //calling scoreboard
         if (!walk)
         {g.drawImage(tony[z][y][0], player.getX(), player.getY()-16,null);}
         else{g.drawImage(tony[z][y][num],player.getX(), player.getY()-16,null);}
-      
+        
         Image[][][] monster = loadPlayer();
-      //g.drawImage(monster[0][1][0], enemy.getX(), enemy.getY()-16,null);
-     }
-     else 
-       end(g, player.getStatus());
-       //draw end graphics
+        //g.drawImage(monster[0][1][0], enemy.getX(), enemy.getY()-16,null);
+      }
+      else 
+        end(g, player.getStatus());
+      //draw end graphics
     }
     
-    
-    ////////////////////// ///////////    ///////////    ///////////    ///////////
     public void score (Graphics g, boolean gender, String name, boolean sword, boolean key)  // g can be passed to a class method
     {
       Image female = loadImage("res/profile pictures/female image.png");
@@ -747,43 +718,51 @@ class skynet extends JFrame //implements ActionListener
       else 
         g.drawImage(male, 810,15,null);
       
-     g.setFont(new Font("American Typewriter", Font.BOLD, 30)); //set font and colour
-     g.drawString(name+"", 918, 70);  
-     g.setFont(new Font("American Typewriter", Font.BOLD, 18)); //set font and colour
-     g.drawString("Inventory", 886, 170);  
-     g.drawString("Sword: ", 810, 220);
-     if (sword == true)
-       g.drawString("You are armed", 810, 240);
-     else
-       g.drawString("Not armed", 810, 240);
-     g.drawString("Key: ", 810, 290);  
-     if (key == true)
-       g.drawString ("You have a key", 810, 310);
-     else 
-       g.drawString ("No key", 810, 310);  
-     
-     g.drawString ("Use arrow keys to move", 810, 370);
-     g.drawString ("Press red x in top left corner to quit", 810, 410);
-     g.drawString ("Press i to view instructions", 810, 450);
-     
+      g.setFont(new Font("American Typewriter", Font.BOLD, 30)); //set font and colour
+      g.drawString(name+"", 918, 70);  
+      g.setFont(new Font("American Typewriter", Font.BOLD, 18)); //set font and colour
+      g.drawString("Inventory", 886, 170);  
+      g.drawString("Sword: ", 810, 220);
+      if (sword == true)
+        g.drawString("You are armed", 810, 240);
+      else
+        g.drawString("Not armed", 810, 240);
+      g.drawString("Key: ", 810, 290);  
+      if (key == true)
+        g.drawString ("You have a key", 810, 310);
+      else 
+        g.drawString ("No key", 810, 310);  
+      
+      g.drawString("Controls", 886, 370);  
+      g.drawString ("Use arrow keys to move", 810, 410);
+      g.drawString ("Press q to quit", 810, 450);
+      g.drawString ("Press d to pick up items", 810, 490);
+      g.drawString ("Press s to use sword", 810, 530);
+      g.drawString ("Press i to view instructions", 810, 570);
+      
     }
     public void end (Graphics g, boolean ifAlive) {
       if (ifAlive) {
-       repaint();
-       g.setFont(new Font("American Typewriter", Font.BOLD, 60)); //set font and colour
-       g.setColor (Color.GREEN); //set font and colour
-       g.drawString ("YOU WIN!", 300, 280);   
-      g.drawString ("PRESS R TO RESTART", 200, 380);   
-      g.drawString ("PRESS Q TO QUIT", 200, 480);   }
+        repaint();
+        g.setFont(new Font("Times New Roman", Font.BOLD, 42)); //set font and colour
+        g.setColor (Color.GREEN); //set font and colour
+        g.drawString ("YOU SUCCESSFULLY ESCAPED!", 200, 200); 
+        g.drawString ("Your memory has been restored", 226, 280);   
+        g.drawString ("Press R to Restart", 365, 410); 
+        g.drawString ("OR", 498, 470);   
+        g.drawString ("Press Q to Quit", 384, 530);   
+      }
       else {
         repaint();
-        g.setFont(new Font("American Typewriter", Font.BOLD, 60)); //set font and colour
+        g.setFont(new Font("Times New Roman", Font.BOLD, 42)); //set font and colour
         g.setColor (Color.RED); //set font and colour
-        g.drawString ("YOU LOSE", 300, 280);   
-        g.drawString ("PRESS R TO RESTART", 200, 380);   
-        g.drawString ("PRESS Q TO QUIT", 200, 480);   
+        g.drawString ("YOU DID NOT SUCCESSFULLY ESCAPE!", 130, 200); 
+        g.drawString ("Your memory has not been restored", 206, 280);   
+        g.drawString ("Press R to Restart", 365, 410); 
+        g.drawString ("OR", 498, 470);   
+        g.drawString ("Press Q to Quit", 384, 530);   
       }
-   
+      
     }
     public Image[][][] loadPlayer()
     {
@@ -797,23 +776,23 @@ class skynet extends JFrame //implements ActionListener
     
     public void drawEn (Graphics g)
     {
-     Image s = loadImage("res/images/entities/sword.png");
-     Image k = loadImage("res/images/entities/key.png");
-     Image[] e = new Image[3];
-    
-     for (int y = 0; y < 3; y++)
-     {
-       e[y] = loadImage("res/images/entities/enemy/0/"+y+".png");
-     }
+      Image s = loadImage("res/images/entities/sword.png");
+      Image k = loadImage("res/images/entities/key.png");
+      Image[] e = new Image[3];
+      
+      for (int y = 0; y < 3; y++)
+      {
+        e[y] = loadImage("res/images/entities/enemy/0/"+y+".png");
+      }
       g.drawImage(e[num], enemy.getX(), enemy.getY()-16,null);
       for (int x = 0; x < en.getSize();x++)
       {
         if ( en.getID(x) == 's' && en.appear(x))
-         g.drawImage(s, en.getX(x), en.getY(x),null);
+          g.drawImage(s, en.getX(x), en.getY(x),null);
         else if (en.getID(x) == 'k'&& en.appear(x))
-           g.drawImage(k, en.getX(x), en.getY(x),null);
+          g.drawImage(k, en.getX(x), en.getY(x),null);
         else if (en.getID(x) == 'e'&& en.appear(x))
-           g.drawImage(e[num], en.getX(x), en.getY(x)-16,null);
+          g.drawImage(e[num], en.getX(x), en.getY(x)-16,null);
       }
       
       
@@ -842,9 +821,9 @@ class skynet extends JFrame //implements ActionListener
       steps();
       for (int x = 0; x < en.getSize(); x++)
       {
-      if ( en.getID(x) == 'e')   
-      {
-        en.EnemyAI(player,x,floor,enemyBound);}
+        if ( en.getID(x) == 'e')   
+        {
+          en.EnemyAI(player,x,floor,enemyBound);}
       }
       player.changeY(player.getVelY());
       player.changeX(player.getVelX());//}
@@ -909,10 +888,15 @@ class skynet extends JFrame //implements ActionListener
         if (lvl <=2)
           en.makeEntities(lvl);
       }
+      else if(e.getKeyCode() == KeyEvent.VK_Q)// && floor.getFloorID(x+1,y) != 'w')
+      { 
+        System.exit(0);
+      }
       else if(e.getKeyCode() == KeyEvent.VK_I){
         Instructions window2 = new Instructions (); //create a hangman game class object according to the second choice
         window2.setVisible (true);    
       }
+      
       //if game has ended
       if (end) { //if the game has ended then the user can press r to start again from menu or q to quit the game
         if(e.getKeyCode() == KeyEvent.VK_R)
@@ -925,7 +909,7 @@ class skynet extends JFrame //implements ActionListener
         else if (e.getKeyCode() == KeyEvent.VK_Q)
           System.exit(0);
       }
-        
+      
     }
     @Override
     public void keyReleased(KeyEvent e) { // All interface methods must be defined
@@ -940,5 +924,5 @@ class skynet extends JFrame //implements ActionListener
       {player.setVelX(0);}  
       walk = false;}   
   }
-
+  
 }///end of class
